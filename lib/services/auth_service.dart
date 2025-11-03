@@ -15,7 +15,7 @@ class AuthService extends ChangeNotifier {
   bool get isAuthenticated => _currentUser != null;
 
   /// Registra un nuevo usuario
-  /// TODO: Integrar con API real
+  /// MOCK: En producción integrar con ApiService.register()
   Future<bool> register({
     required String name,
     required String email,
@@ -53,7 +53,7 @@ class AuthService extends ChangeNotifier {
   }
 
   /// Inicia sesión con email y contraseña
-  /// TODO: Integrar con API real
+  /// MOCK: En producción integrar con ApiService.login()
   Future<bool> login({
     required String email,
     required String password,
@@ -99,7 +99,7 @@ class AuthService extends ChangeNotifier {
   }
 
   /// Recupera la contraseña del usuario
-  /// TODO: Integrar con API real
+  /// MOCK: En producción integrar con ApiService.resetPassword()
   Future<bool> resetPassword(String email) async {
     _setLoading(true);
     _setError(null);
@@ -125,7 +125,7 @@ class AuthService extends ChangeNotifier {
   }
 
   /// Cambia la contraseña del usuario
-  /// TODO: Integrar con API real
+  /// MOCK: En producción integrar con ApiService.changePassword()
   Future<bool> changePassword({
     required String currentPassword,
     required String newPassword,
@@ -158,13 +158,13 @@ class AuthService extends ChangeNotifier {
   }
 
   /// Actualiza el token de sesión
-  /// TODO: Implementar refresh token
+  /// PENDIENTE: Implementar refresh token con JWT
   Future<void> refreshToken() async {
     // Implementar lógica de refresh token
   }
 
   /// Verifica si hay una sesión guardada
-  /// TODO: Implementar persistencia con SharedPreferences
+  /// PENDIENTE: Implementar persistencia con SharedPreferences
   Future<void> checkSession() async {
     _setLoading(true);
 

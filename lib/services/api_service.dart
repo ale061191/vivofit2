@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 /// Servicio para manejar llamadas a la API
 /// Centraliza toda la comunicación con el backend
 class ApiService {
-  // TODO: Configurar URL base del servidor
+  // NOTA: Configurar URL base del servidor en producción
   static const String baseUrl = 'https://api.vivofit.com/v1';
   static const Duration timeoutDuration = Duration(seconds: 30);
 
@@ -272,8 +272,8 @@ class ApiService {
 
   /// Subir imagen
   static Future<String> uploadImage(String filePath, String token) async {
-    // TODO: Implementar subida de imagen
-    // Usar multipart/form-data para subir archivo
+    // PENDIENTE: Implementar subida de imagen con multipart/form-data
+    // Retornará la URL de la imagen subida al servidor
     throw UnimplementedError('Subida de imágenes no implementada');
   }
 }

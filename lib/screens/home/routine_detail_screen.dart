@@ -30,7 +30,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
 
   Future<void> _initializeVideo() async {
     final routine = _getRoutine();
-    
+
     if (routine.videoUrl != null && routine.videoUrl!.isNotEmpty) {
       _hasVideo = true;
       try {
@@ -286,83 +286,83 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                   ),
                   const SizedBox(height: 16),
                   ...routine.exercises.asMap().entries.map(
-                    (entry) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: ColorPalette.cardGradient,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(12),
-                          leading: Container(
-                            width: 40,
-                            height: 40,
+                        (entry) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Container(
                             decoration: BoxDecoration(
-                              gradient: ColorPalette.primaryGradient,
-                              shape: BoxShape.circle,
+                              gradient: ColorPalette.cardGradient,
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Center(
-                              child: Text(
-                                '${entry.key + 1}',
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(12),
+                              leading: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  gradient: ColorPalette.primaryGradient,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '${entry.key + 1}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              title: Text(
+                                entry.value.name,
                                 style: const TextStyle(
                                   fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorPalette.textPrimary,
                                 ),
                               ),
-                            ),
-                          ),
-                          title: Text(
-                            entry.value.name,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: ColorPalette.textPrimary,
-                            ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 4),
-                              Text(
-                                '${entry.value.sets} series x ${entry.value.reps} reps',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: ColorPalette.textSecondary,
-                                ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${entry.value.sets} series x ${entry.value.reps} reps',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: ColorPalette.textSecondary,
+                                    ),
+                                  ),
+                                  if (entry.value.restSeconds != null) ...[
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      'Descanso: ${entry.value.restSeconds}s',
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: ColorPalette.textTertiary,
+                                      ),
+                                    ),
+                                  ],
+                                  if (entry.value.notes != null) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      entry.value.notes!,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: ColorPalette.primary,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  ],
+                                ],
                               ),
-                              if (entry.value.restSeconds != null) ...[
-                                const SizedBox(height: 2),
-                                Text(
-                                  'Descanso: ${entry.value.restSeconds}s',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: ColorPalette.textTertiary,
-                                  ),
-                                ),
-                              ],
-                              if (entry.value.notes != null) ...[
-                                const SizedBox(height: 4),
-                                Text(
-                                  entry.value.notes!,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: ColorPalette.primary,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                          trailing: const Icon(
-                            Icons.fitness_center,
-                            color: ColorPalette.primary,
+                              trailing: const Icon(
+                                Icons.fitness_center,
+                                color: ColorPalette.primary,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
                   const SizedBox(height: 32),
                 ],
               ),

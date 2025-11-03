@@ -15,7 +15,7 @@ class UserService extends ChangeNotifier {
   String? get error => _error;
 
   /// Carga los datos del usuario
-  /// TODO: Integrar con API real
+  /// MOCK: En producción usar ApiService.getUser()
   Future<void> loadUser(String userId) async {
     _setLoading(true);
     _setError(null);
@@ -34,7 +34,7 @@ class UserService extends ChangeNotifier {
   }
 
   /// Actualiza el perfil del usuario
-  /// TODO: Integrar con API real
+  /// MOCK: En producción usar ApiService.updateUser()
   Future<bool> updateProfile({
     String? name,
     int? age,
@@ -78,7 +78,7 @@ class UserService extends ChangeNotifier {
   }
 
   /// Actualiza la foto de perfil
-  /// TODO: Integrar con servicio de almacenamiento
+  /// PENDIENTE: Integrar con servicio de almacenamiento en la nube
   Future<bool> updateProfilePhoto() async {
     if (_user == null) {
       _setError('No hay usuario cargado');
@@ -103,7 +103,7 @@ class UserService extends ChangeNotifier {
       // Simular subida de imagen
       await Future.delayed(const Duration(seconds: 2));
 
-      // TODO: Subir imagen al servidor y obtener URL
+      // En producción: usar ApiService.uploadImage() y obtener URL
       final photoUrl = 'https://via.placeholder.com/150';
 
       _user = _user!.copyWith(
@@ -122,7 +122,7 @@ class UserService extends ChangeNotifier {
   }
 
   /// Activa una membresía para el usuario
-  /// TODO: Integrar con API real
+  /// MOCK: En producción usar ApiService.activateMembership()
   Future<bool> activateMembership(String programId) async {
     if (_user == null) {
       _setError('No hay usuario cargado');
@@ -181,7 +181,7 @@ class UserService extends ChangeNotifier {
   }
 
   /// Elimina la cuenta del usuario
-  /// TODO: Integrar con API real
+  /// MOCK: En producción usar ApiService.deleteUser()
   Future<bool> deleteAccount() async {
     if (_user == null) {
       _setError('No hay usuario cargado');

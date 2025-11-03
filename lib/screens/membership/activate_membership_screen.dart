@@ -79,19 +79,19 @@ class _ActivateMembershipScreenState extends State<ActivateMembershipScreen> {
     try {
       final userService = context.read<UserService>();
       final currentUser = userService.user!;
-      
+
       // Agregar el programa a las membresías activas del usuario
       if (widget.programId != null) {
         final updatedMemberships = [
           ...currentUser.activeMemberships,
           widget.programId!,
         ];
-        
+
         final updatedUser = currentUser.copyWith(
           activeMemberships: updatedMemberships,
           updatedAt: DateTime.now(),
         );
-        
+
         userService.setUser(updatedUser);
       }
 

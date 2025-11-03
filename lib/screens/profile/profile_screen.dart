@@ -43,7 +43,8 @@ class ProfileScreen extends StatelessWidget {
                 // Foto de perfil
                 GestureDetector(
                   onTap: () {
-                    // TODO: Cambiar foto
+                    // Redirigir a editar perfil para cambiar foto
+                    Navigator.pushNamed(context, '/edit-profile');
                   },
                   child: CircleAvatar(
                     radius: 60,

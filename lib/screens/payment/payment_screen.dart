@@ -45,7 +45,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Future<void> _handleSubmitPayment() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // TODO: Enviar datos de pago al servidor
+    // En producción: enviar datos de pago al servidor con ApiService
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

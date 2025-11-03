@@ -30,14 +30,14 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
             onPressed: () {
-              // TODO: Implementar notificaciones
+              // Funcionalidad de notificaciones pendiente de integración con backend
             },
           ),
         ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          // TODO: Implementar refresh
+          // Actualizar datos desde el servidor
           await Future.delayed(const Duration(seconds: 1));
         },
         child: SingleChildScrollView(

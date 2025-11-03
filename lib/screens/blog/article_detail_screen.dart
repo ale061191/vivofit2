@@ -220,9 +220,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                             });
                           },
                           icon: Icon(
-                            _isLiked
-                                ? Icons.favorite
-                                : Icons.favorite_border,
+                            _isLiked ? Icons.favorite : Icons.favorite_border,
                             color: _isLiked
                                 ? ColorPalette.primary
                                 : ColorPalette.textTertiary,
@@ -248,28 +246,30 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: article.tags.map(
-                        (tag) => Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: ColorPalette.cardBackground,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: ColorPalette.cardBackgroundLight,
+                      children: article.tags
+                          .map(
+                            (tag) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: ColorPalette.cardBackground,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: ColorPalette.cardBackgroundLight,
+                                ),
+                              ),
+                              child: Text(
+                                '#$tag',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: ColorPalette.textSecondary,
+                                ),
+                              ),
                             ),
-                          ),
-                          child: Text(
-                            '#$tag',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: ColorPalette.textSecondary,
-                            ),
-                          ),
-                        ),
-                      ).toList(),
+                          )
+                          .toList(),
                     ),
                     const SizedBox(height: 32),
                   ],

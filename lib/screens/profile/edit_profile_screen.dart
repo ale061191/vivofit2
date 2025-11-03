@@ -37,7 +37,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
     final user = context.read<UserService>().user;
-    
+
     _nameController = TextEditingController(text: user?.name ?? '');
     _ageController = TextEditingController(
       text: user?.age?.toString() ?? '',
@@ -103,7 +103,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.camera_alt, color: ColorPalette.primary),
+              leading:
+                  const Icon(Icons.camera_alt, color: ColorPalette.primary),
               title: const Text(
                 'Tomar foto',
                 style: TextStyle(color: ColorPalette.textPrimary),
@@ -114,7 +115,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library, color: ColorPalette.primary),
+              leading:
+                  const Icon(Icons.photo_library, color: ColorPalette.primary),
               title: const Text(
                 'Elegir de galería',
                 style: TextStyle(color: ColorPalette.textPrimary),
@@ -146,11 +148,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         age: int.tryParse(_ageController.text.trim()),
         height: double.tryParse(_heightController.text.trim()),
         weight: double.tryParse(_weightController.text.trim()),
-        phone: _phoneController.text.trim().isEmpty 
-            ? null 
+        phone: _phoneController.text.trim().isEmpty
+            ? null
             : _phoneController.text.trim(),
-        location: _locationController.text.trim().isEmpty 
-            ? null 
+        location: _locationController.text.trim().isEmpty
+            ? null
             : _locationController.text.trim(),
         gender: _selectedGender,
         updatedAt: DateTime.now(),
@@ -247,7 +249,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   labelText: 'Nombre completo',
                   prefixIcon: Icon(Icons.person_outline),
                 ),
-                validator: (value) => Validators.required(value, fieldName: 'El nombre'),
+                validator: (value) =>
+                    Validators.required(value, fieldName: 'El nombre'),
               ),
               const SizedBox(height: 16),
 
@@ -274,8 +277,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         prefixIcon: Icon(Icons.person_pin_outlined),
                       ),
                       items: const [
-                        DropdownMenuItem(value: 'male', child: Text('Masculino')),
-                        DropdownMenuItem(value: 'female', child: Text('Femenino')),
+                        DropdownMenuItem(
+                            value: 'male', child: Text('Masculino')),
+                        DropdownMenuItem(
+                            value: 'female', child: Text('Femenino')),
                         DropdownMenuItem(value: 'other', child: Text('Otro')),
                       ],
                       onChanged: (value) {
@@ -305,7 +310,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _weightController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       decoration: const InputDecoration(
                         labelText: 'Peso',
                         prefixIcon: Icon(Icons.monitor_weight_outlined),

@@ -238,67 +238,70 @@ class ProgramDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   ...programRoutines.take(3).map(
-                    (routine) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: InkWell(
-                        onTap: () => AppRoutes.goToRoutineDetail(context, routine.id),
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: ColorPalette.cardBackground,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: ColorPalette.cardBackgroundLight,
+                        (routine) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: InkWell(
+                            onTap: () => AppRoutes.goToRoutineDetail(
+                                context, routine.id),
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: ColorPalette.cardBackground,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: ColorPalette.cardBackgroundLight,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: ColorPalette.primary
+                                          .withValues(alpha: 0.2),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Icon(
+                                      Icons.play_circle_outline,
+                                      color: ColorPalette.primary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          routine.name,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: ColorPalette.textPrimary,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '${routine.durationMinutes} min • ${routine.muscleGroup}',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: ColorPalette.textTertiary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.chevron_right,
+                                    color: ColorPalette.textTertiary,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 50,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  color: ColorPalette.primary.withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Icon(
-                                  Icons.play_circle_outline,
-                                  color: ColorPalette.primary,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      routine.name,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: ColorPalette.textPrimary,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '${routine.durationMinutes} min • ${routine.muscleGroup}',
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: ColorPalette.textTertiary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Icon(
-                                Icons.chevron_right,
-                                color: ColorPalette.textTertiary,
-                              ),
-                            ],
                           ),
                         ),
                       ),
-                    ),
-                  ),
                   if (programRoutines.length > 3)
                     Padding(
                       padding: const EdgeInsets.only(top: 8),

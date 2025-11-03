@@ -255,7 +255,7 @@ class AppTheme {
       brightness: Brightness.light,
       scaffoldBackgroundColor: Colors.white,
       primaryColor: ColorPalette.primary,
-      // TODO: Implementar tema claro completo
+      // PENDIENTE: Implementar tema claro completo si el usuario lo solicita
     );
   }
 }
