@@ -53,7 +53,8 @@ class ProfileScreen extends StatelessWidget {
                         ? NetworkImage(user.photoUrl!)
                         : null,
                     child: user.photoUrl == null
-                        ? const Icon(Icons.person, size: 60, color: Colors.black)
+                        ? const Icon(Icons.person,
+                            size: 60, color: Colors.black)
                         : null,
                   ),
                 ),
@@ -113,10 +114,14 @@ class ProfileScreen extends StatelessWidget {
 
                 // Información personal
                 _buildInfoRow(Icons.cake, 'Edad', '${user.age ?? "N/A"} años'),
-                _buildInfoRow(Icons.height, 'Altura', '${user.height ?? "N/A"} cm'),
-                _buildInfoRow(Icons.monitor_weight, 'Peso', '${user.weight ?? "N/A"} kg'),
-                _buildInfoRow(Icons.phone, 'Teléfono', user.phone ?? 'No especificado'),
-                _buildInfoRow(Icons.location_on, 'Ubicación', user.location ?? 'No especificado'),
+                _buildInfoRow(
+                    Icons.height, 'Altura', '${user.height ?? "N/A"} cm'),
+                _buildInfoRow(
+                    Icons.monitor_weight, 'Peso', '${user.weight ?? "N/A"} kg'),
+                _buildInfoRow(
+                    Icons.phone, 'Teléfono', user.phone ?? 'No especificado'),
+                _buildInfoRow(Icons.location_on, 'Ubicación',
+                    user.location ?? 'No especificado'),
 
                 const SizedBox(height: 32),
 

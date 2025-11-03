@@ -87,9 +87,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   color: ColorPalette.textPrimary,
                 ),
               ),
-
               const SizedBox(height: 24),
-
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(
                   labelText: 'Banco',
@@ -98,12 +96,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 items: _banks.map((bank) {
                   return DropdownMenuItem(value: bank, child: Text(bank));
                 }).toList(),
-                validator: (value) => Validators.required(value, fieldName: 'Banco'),
+                validator: (value) =>
+                    Validators.required(value, fieldName: 'Banco'),
                 onChanged: (value) => _bankController.text = value ?? '',
               ),
-
               const SizedBox(height: 16),
-
               TextFormField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
@@ -114,9 +111,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   hintText: '0412-1234567',
                 ),
               ),
-
               const SizedBox(height: 16),
-
               TextFormField(
                 controller: _cedulaController,
                 validator: Validators.cedulaVenezuela,
@@ -126,9 +121,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   hintText: 'V-12345678',
                 ),
               ),
-
               const SizedBox(height: 16),
-
               TextFormField(
                 controller: _amountController,
                 keyboardType: TextInputType.number,
@@ -139,9 +132,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   hintText: '0.00',
                 ),
               ),
-
               const SizedBox(height: 16),
-
               TextFormField(
                 controller: _referenceController,
                 keyboardType: TextInputType.number,
@@ -152,9 +143,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   hintText: '1234567890',
                 ),
               ),
-
               const SizedBox(height: 32),
-
               CustomButton(
                 text: 'Enviar Pago',
                 onPressed: _handleSubmitPayment,

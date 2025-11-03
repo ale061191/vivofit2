@@ -30,7 +30,7 @@ class ApiService {
   }) async {
     try {
       var uri = Uri.parse('$baseUrl$endpoint');
-      
+
       if (queryParams != null && queryParams.isNotEmpty) {
         uri = uri.replace(queryParameters: queryParams);
       }
@@ -112,7 +112,7 @@ class ApiService {
   /// Maneja la respuesta de la API
   static Map<String, dynamic> _handleResponse(http.Response response) {
     final statusCode = response.statusCode;
-    
+
     if (statusCode >= 200 && statusCode < 300) {
       if (response.body.isEmpty) {
         return {'success': true};
@@ -124,7 +124,8 @@ class ApiService {
     String errorMessage;
     try {
       final errorBody = jsonDecode(response.body);
-      errorMessage = errorBody['message'] ?? errorBody['error'] ?? 'Error desconocido';
+      errorMessage =
+          errorBody['message'] ?? errorBody['error'] ?? 'Error desconocido';
     } catch (_) {
       errorMessage = 'Error del servidor (${response.statusCode})';
     }
@@ -205,22 +206,26 @@ class ApiService {
     return get('/programs', token: token);
   }
 
-  static Future<Map<String, dynamic>> getProgram(String programId, {String? token}) {
+  static Future<Map<String, dynamic>> getProgram(String programId,
+      {String? token}) {
     return get('/programs/$programId', token: token);
   }
 
   /// Rutinas
-  static Future<Map<String, dynamic>> getRoutines({String? muscleGroup, String? token}) {
+  static Future<Map<String, dynamic>> getRoutines(
+      {String? muscleGroup, String? token}) {
     final params = muscleGroup != null ? {'muscleGroup': muscleGroup} : null;
     return get('/routines', queryParams: params, token: token);
   }
 
-  static Future<Map<String, dynamic>> getRoutine(String routineId, String token) {
+  static Future<Map<String, dynamic>> getRoutine(
+      String routineId, String token) {
     return get('/routines/$routineId', token: token);
   }
 
   /// Alimentos
-  static Future<Map<String, dynamic>> getFoods({String? category, String? search}) {
+  static Future<Map<String, dynamic>> getFoods(
+      {String? category, String? search}) {
     final params = <String, String>{};
     if (category != null) params['category'] = category;
     if (search != null) params['search'] = search;
@@ -242,7 +247,8 @@ class ApiService {
   }
 
   /// Membresías
-  static Future<Map<String, dynamic>> getMemberships(String userId, String token) {
+  static Future<Map<String, dynamic>> getMemberships(
+      String userId, String token) {
     return get('/users/$userId/memberships', token: token);
   }
 

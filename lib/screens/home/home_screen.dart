@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 actionText: 'Ver todos',
                 onActionPressed: () {},
               ),
-              
+
               SizedBox(
                 height: 240,
                 child: ListView.builder(
@@ -69,7 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         totalReviews: program.totalReviews,
                         imageUrl: program.imageUrl,
                         isPopular: program.isPopular,
-                        onTap: () => AppRoutes.goToProgramDetail(context, program.id),
+                        onTap: () =>
+                            AppRoutes.goToProgramDetail(context, program.id),
                       ),
                     );
                   },
@@ -123,7 +124,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     calories: routine.estimatedCalories,
                     imageUrl: routine.thumbnailUrl,
                     isLocked: routine.isPremium,
-                    onTap: () => AppRoutes.goToRoutineDetail(context, routine.id),
+                    onTap: () =>
+                        AppRoutes.goToRoutineDetail(context, routine.id),
                   );
                 },
               ),

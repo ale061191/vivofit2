@@ -9,8 +9,8 @@ applyTo: '**'
 ### Antes de desarrollar cualquier componente, página, vista o funcionalidad:
 - **SIEMPRE** revisa primero la guía de estilos vigente que has definido (colores, tipografía, animaciones, espaciados, iconografía).
 - Aplica **estrictamente** los valores especificados:
-  - **Fondo:** 0x161616 (negro)
-  - **Acentos:** 0xFF9900 (naranja brillante)
+  - **Fondo:** Color(0xFF161616) - negro
+  - **Acentos:** Color(0xFFFF9900) - naranja brillante
   - **Secundarios:** gris claro y blanco
   - **Tipografía:** moderna y legible, títulos en negrita (Google Fonts Inter)
   - **Espaciado:** generoso y ordenado según ejemplos establecidos
@@ -104,8 +104,8 @@ applyTo: '**'
 ### Colores principales:
 ```dart
 // lib/theme/color_palette.dart
-static const Color background = Color(0xFF161616);      // 0x161616 (negro)
-static const Color primary = Color(0xFFFF9900);         // 0xFF9900 (naranja brillante)
+static const Color background = Color(0xFF161616);      // Negro oscuro
+static const Color primary = Color(0xFFFF9900);         // Naranja brillante
 static const Color textPrimary = Color(0xFFFFFFFF);     // Blanco
 static const Color textSecondary = Color(0xFFB0B0B0);   // Gris claro
 static const Color cardBackground = Color(0xFF1E1E1E);  // Gris oscuro para cards

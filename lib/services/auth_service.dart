@@ -89,7 +89,7 @@ class AuthService extends ChangeNotifier {
     try {
       // Simular limpieza de sesión
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       _currentUser = null;
       _error = null;
       notifyListeners();

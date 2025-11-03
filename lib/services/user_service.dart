@@ -23,7 +23,7 @@ class UserService extends ChangeNotifier {
     try {
       // Simular llamada a API
       await Future.delayed(const Duration(seconds: 1));
-      
+
       _user = User.mock();
       notifyListeners();
     } catch (e) {
