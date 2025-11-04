@@ -91,11 +91,13 @@ class Program {
       Program(
         id: 'program_1',
         name: 'Full Body Transformation',
-        description: 'Programa completo para transformar tu cuerpo en 12 semanas',
+        description:
+            'Programa completo para transformar tu cuerpo en 12 semanas',
         durationWeeks: 12,
         rating: 4.8,
         totalReviews: 342,
         price: 49.99,
+        imageUrl: 'assets/images/onboarding/image14.png',
         level: 'intermediate',
         benefits: [
           'Rutinas personalizadas',
@@ -115,6 +117,7 @@ class Program {
         rating: 4.6,
         totalReviews: 218,
         price: 39.99,
+        imageUrl: 'assets/images/onboarding/image15.png',
         level: 'advanced',
         benefits: [
           'Enfoque en fuerza',
@@ -132,6 +135,7 @@ class Program {
         rating: 4.9,
         totalReviews: 528,
         price: 59.99,
+        imageUrl: 'assets/images/onboarding/image6.png',
         level: 'beginner',
         benefits: [
           'Plan alimenticio incluido',

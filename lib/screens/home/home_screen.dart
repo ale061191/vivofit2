@@ -41,15 +41,23 @@ class _HomeScreenState extends State<HomeScreen> {
           await Future.delayed(const Duration(seconds: 1));
         },
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: AppTheme.paddingMedium),
+          padding: EdgeInsets.zero,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Hero Section con imagen y logo
+              _buildHeroSection(),
+
+              const SizedBox(height: 24),
+
               // Programas destacados
-              SectionHeader(
-                title: 'Programas',
-                actionText: 'Ver todos',
-                onActionPressed: () {},
+              Padding(
+                padding: const EdgeInsets.only(top: AppTheme.paddingMedium),
+                child: SectionHeader(
+                  title: 'Programas',
+                  actionText: 'Ver todos',
+                  onActionPressed: () {},
+                ),
               ),
 
               SizedBox(
@@ -131,6 +139,171 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeroSection() {
+    return Container(
+      height: 240,
+      width: double.infinity,
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: ColorPalette.primary.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8), // Reducido en eje X, solo vertical
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          children: [
+            // Imagen de fondo a pantalla completa
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/onboarding/image6.png',
+                fit: BoxFit.cover,
+                alignment: Alignment.center,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          ColorPalette.cardBackground,
+                          ColorPalette.background,
+                        ],
+                      ),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.fitness_center,
+                        size: 80,
+                        color: ColorPalette.primary,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+
+            // Gradiente oscuro para mejor contraste
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.85),
+                    Colors.black.withValues(alpha: 0.6),
+                    Colors.black.withValues(alpha: 0.3),
+                  ],
+                  stops: const [0.0, 0.5, 1.0],
+                ),
+              ),
+            ),
+
+            // Contenido: Logo y texto
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Logo de VivoFit más pequeño
+                  Image.asset(
+                    'assets/images/logo/vivofit-logo.png',
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          gradient: ColorPalette.primaryGradient,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'VF',
+                                style: TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.black,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+
+                  const SizedBox(width: 20),
+
+                  // Texto motivacional
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Texto "PREPÁRATE PARA ENTRENAR"
+                        const Text(
+                          'PREPÁRATE PARA ENTRENAR',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                            color: ColorPalette.textSecondary,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        // Descripción con icono
+                        Row(
+                          children: [
+                            Container(
+                              width: 3,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                gradient: ColorPalette.primaryGradient,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Text(
+                                'Alcanza tus objetivos con rutinas personalizadas y profesionales',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: ColorPalette.textPrimary,
+                                  height: 1.4,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

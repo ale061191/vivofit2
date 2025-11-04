@@ -72,11 +72,22 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 const SizedBox(height: 40),
 
-                // Logo
-                const Icon(
-                  Icons.fitness_center,
-                  size: 80,
-                  color: ColorPalette.primary,
+                // Logo de Vivofit
+                Center(
+                  child: Image.asset(
+                    'assets/images/logo/vivofit-logo.png',
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      // Fallback si el logo no se carga
+                      return const Icon(
+                        Icons.fitness_center,
+                        size: 80,
+                        color: ColorPalette.primary,
+                      );
+                    },
+                  ),
                 ),
 
                 const SizedBox(height: 16),

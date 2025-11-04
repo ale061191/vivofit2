@@ -4,7 +4,8 @@ class Routine {
   final String id;
   final String name;
   final String description;
-  final String muscleGroup; // 'chest', 'back', 'legs', 'arms', 'shoulders', 'core', 'full'
+  final String
+      muscleGroup; // 'chest', 'back', 'legs', 'arms', 'shoulders', 'core', 'full'
   final int durationMinutes;
   final int estimatedCalories;
   final String difficulty; // 'easy', 'medium', 'hard'
@@ -81,9 +82,8 @@ class Routine {
       difficulty: json['difficulty'],
       videoUrl: json['videoUrl'],
       thumbnailUrl: json['thumbnailUrl'],
-      exercises: (json['exercises'] as List)
-          .map((e) => Exercise.fromJson(e))
-          .toList(),
+      exercises:
+          (json['exercises'] as List).map((e) => Exercise.fromJson(e)).toList(),
       programId: json['programId'],
       isPremium: json['isPremium'] ?? false,
     );
@@ -101,6 +101,7 @@ class Routine {
         estimatedCalories: 380,
         difficulty: 'medium',
         videoUrl: 'https://example.com/chest_workout.mp4',
+        thumbnailUrl: 'assets/images/onboarding/image7.png',
         exercises: Exercise.mockListChest(),
         programId: 'program_1',
         isPremium: true,
@@ -114,6 +115,7 @@ class Routine {
         estimatedCalories: 350,
         difficulty: 'medium',
         videoUrl: 'https://example.com/back_workout.mp4',
+        thumbnailUrl: 'assets/images/onboarding/image9.png',
         exercises: Exercise.mockListBack(),
         isPremium: false,
       ),
@@ -126,6 +128,7 @@ class Routine {
         estimatedCalories: 480,
         difficulty: 'hard',
         videoUrl: 'https://example.com/legs_workout.mp4',
+        thumbnailUrl: 'assets/images/onboarding/image3.png',
         exercises: Exercise.mockListLegs(),
         programId: 'program_1',
         isPremium: true,
@@ -138,6 +141,7 @@ class Routine {
         durationMinutes: 35,
         estimatedCalories: 280,
         difficulty: 'easy',
+        thumbnailUrl: 'assets/images/onboarding/image1.png',
         exercises: Exercise.mockListArms(),
         isPremium: false,
       ),
@@ -184,7 +188,8 @@ class Exercise {
   static List<Exercise> mockListChest() {
     return [
       Exercise(name: 'Press de banca', sets: 4, reps: 10, restSeconds: 90),
-      Exercise(name: 'Aperturas con mancuernas', sets: 3, reps: 12, restSeconds: 60),
+      Exercise(
+          name: 'Aperturas con mancuernas', sets: 3, reps: 12, restSeconds: 60),
       Exercise(name: 'Fondos en paralelas', sets: 3, reps: 15, restSeconds: 60),
       Exercise(name: 'Pullover', sets: 3, reps: 12, restSeconds: 60),
     ];
@@ -203,14 +208,16 @@ class Exercise {
       Exercise(name: 'Sentadillas', sets: 5, reps: 10, restSeconds: 120),
       Exercise(name: 'Prensa de piernas', sets: 4, reps: 12, restSeconds: 90),
       Exercise(name: 'Curl femoral', sets: 3, reps: 15, restSeconds: 60),
-      Exercise(name: 'Extensión de cuádriceps', sets: 3, reps: 15, restSeconds: 60),
+      Exercise(
+          name: 'Extensión de cuádriceps', sets: 3, reps: 15, restSeconds: 60),
     ];
   }
 
   static List<Exercise> mockListArms() {
     return [
       Exercise(name: 'Curl de bíceps', sets: 3, reps: 12, restSeconds: 60),
-      Exercise(name: 'Extensión de tríceps', sets: 3, reps: 12, restSeconds: 60),
+      Exercise(
+          name: 'Extensión de tríceps', sets: 3, reps: 12, restSeconds: 60),
       Exercise(name: 'Martillo', sets: 3, reps: 10, restSeconds: 60),
     ];
   }
