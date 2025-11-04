@@ -108,7 +108,7 @@ class _BlogScreenState extends State<BlogScreen> {
                 alignment: Alignment.center,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -187,7 +187,7 @@ class _BlogScreenState extends State<BlogScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'BLOG',
                           style: TextStyle(
                             fontSize: 20,
@@ -208,7 +208,7 @@ class _BlogScreenState extends State<BlogScreen> {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            Expanded(
+                            const Expanded(
                               child: Text(
                                 'Disfruta de los mejores artículos en Salud, entrenamiento y bienestar de interés',
                                 style: TextStyle(

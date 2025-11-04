@@ -226,7 +226,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       onTap: _showImageSourceDialog,
                       child: Container(
                         padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           gradient: ColorPalette.primaryGradient,
                           shape: BoxShape.circle,
                         ),

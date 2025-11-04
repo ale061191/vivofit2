@@ -281,7 +281,7 @@ class FoodDetailScreen extends StatelessWidget {
                               Container(
                                 width: 32,
                                 height: 32,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   gradient: ColorPalette.primaryGradient,
                                   shape: BoxShape.circle,
                                 ),

@@ -216,9 +216,9 @@ class RoutineCard extends StatelessWidget {
             Container(
               width: 100,
               height: 100,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: ColorPalette.cardBackgroundLight,
-                borderRadius: const BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(AppTheme.radiusMedium),
                   bottomLeft: Radius.circular(AppTheme.radiusMedium),
                 ),
@@ -386,9 +386,9 @@ class FoodCard extends StatelessWidget {
             Container(
               width: 80,
               height: 80,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: ColorPalette.cardBackgroundLight,
-                borderRadius: const BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(AppTheme.radiusMedium),
                   bottomLeft: Radius.circular(AppTheme.radiusMedium),
                 ),

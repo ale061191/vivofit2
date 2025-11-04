@@ -218,7 +218,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                               borderRadius: BorderRadius.circular(16),
                               child: Chewie(controller: _chewieController!),
                             )
-                          : Center(
+                          : const Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -227,8 +227,8 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                                     size: 64,
                                     color: ColorPalette.primary,
                                   ),
-                                  const SizedBox(height: 12),
-                                  const Text(
+                                  SizedBox(height: 12),
+                                  Text(
                                     'Video no disponible en demo',
                                     style: TextStyle(
                                       color: ColorPalette.textTertiary,
@@ -298,7 +298,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                               leading: Container(
                                 width: 40,
                                 height: 40,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   gradient: ColorPalette.primaryGradient,
                                   shape: BoxShape.circle,
                                 ),

@@ -110,7 +110,7 @@ class _ActivateMembershipScreenState extends State<ActivateMembershipScreen> {
               children: [
                 Container(
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     gradient: ColorPalette.primaryGradient,
                     shape: BoxShape.circle,
                   ),
@@ -398,7 +398,7 @@ class _ActivateMembershipScreenState extends State<ActivateMembershipScreen> {
                     color: ColorPalette.primary.withValues(alpha: 0.3),
                   ),
                 ),
-                child: Row(
+                child: const Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
@@ -406,8 +406,8 @@ class _ActivateMembershipScreenState extends State<ActivateMembershipScreen> {
                       color: ColorPalette.primary,
                       size: 20,
                     ),
-                    const SizedBox(width: 12),
-                    const Expanded(
+                    SizedBox(width: 12),
+                    Expanded(
                       child: Text(
                         'Tu pago será verificado en las próximas 24 horas. Recibirás una notificación cuando tu membresía esté activa.',
                         style: TextStyle(

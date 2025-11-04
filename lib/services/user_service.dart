@@ -104,7 +104,7 @@ class UserService extends ChangeNotifier {
       await Future.delayed(const Duration(seconds: 2));
 
       // En producción: usar ApiService.uploadImage() y obtener URL
-      final photoUrl = 'https://via.placeholder.com/150';
+      const photoUrl = 'https://via.placeholder.com/150';
 
       _user = _user!.copyWith(
         photoUrl: photoUrl,

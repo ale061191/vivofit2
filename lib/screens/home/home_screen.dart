@@ -172,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 alignment: Alignment.center,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,

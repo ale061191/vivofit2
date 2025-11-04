@@ -291,7 +291,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           errorBuilder: (context, error, stackTrace) {
             // Fallback si la imagen no se encuentra
             return Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,

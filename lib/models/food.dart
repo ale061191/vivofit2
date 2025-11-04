@@ -117,6 +117,7 @@ class Food {
         protein: 32,
         carbs: 48,
         fats: 12,
+        imageUrl: 'assets/images/nutrition/avenaConProteina.jpg',
         ingredients: [
           '80g de avena',
           '1 scoop de proteína',
@@ -136,13 +137,15 @@ class Food {
       Food(
         id: 'food_2',
         name: 'Pollo con Batata',
-        description: 'Almuerzo balanceado con proteína magra y carbohidratos complejos',
+        description:
+            'Almuerzo balanceado con proteína magra y carbohidratos complejos',
         category: 'lunch',
         preparationTimeMinutes: 35,
         calories: 520,
         protein: 45,
         carbs: 55,
         fats: 10,
+        imageUrl: 'assets/images/nutrition/polloConBatata.jpg',
         ingredients: [
           '200g de pechuga de pollo',
           '200g de batata',
@@ -169,6 +172,7 @@ class Food {
         protein: 38,
         carbs: 22,
         fats: 12,
+        imageUrl: 'assets/images/nutrition/ensaladaDeAtun.jpg',
         ingredients: [
           '1 lata de atún',
           'Lechuga mixta',
@@ -195,6 +199,7 @@ class Food {
         protein: 30,
         carbs: 28,
         fats: 6,
+        imageUrl: 'assets/images/nutrition/batidoProteico.jpg',
         ingredients: [
           '1 scoop de proteína',
           '1 plátano',
@@ -222,9 +227,10 @@ class Food {
   static List<Food> search(List<Food> foods, String query) {
     if (query.isEmpty) return foods;
     final lowerQuery = query.toLowerCase();
-    return foods.where((food) =>
-      food.name.toLowerCase().contains(lowerQuery) ||
-      food.description.toLowerCase().contains(lowerQuery)
-    ).toList();
+    return foods
+        .where((food) =>
+            food.name.toLowerCase().contains(lowerQuery) ||
+            food.description.toLowerCase().contains(lowerQuery))
+        .toList();
   }
 }
