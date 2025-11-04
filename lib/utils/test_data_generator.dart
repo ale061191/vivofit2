@@ -14,38 +14,128 @@ class TestDataGenerator {
     final userId = authService.currentUser?.id ?? 'demo_user';
 
     final now = DateTime.now();
-    final uuid = const Uuid();
+    const uuid = Uuid();
 
-    // Limpiar datos previos (opcional)
-    // await trackerService.clearAllSessions();
+    // Patrón de entrenamiento más realista:
+    // - Última semana: más consistente (5-6 días)
+    // - Semana anterior: medianamente consistente (4 días)
+    // - Semanas más antiguas: menos consistente (2-3 días por semana)
 
-    // Generar entrenamientos de los últimos 30 días
-    for (int i = 0; i < 30; i++) {
+    int totalWorkouts = 0;
+
+    // Últimos 7 días - Usuario comprometido (racha actual)
+    for (int i = 0; i < 7; i++) {
+      if (i == 2) continue; // Solo 1 día de descanso
       final date = now.subtract(Duration(days: i));
+      final routineId = _getRandomRoutineId(i + totalWorkouts);
+      final duration = _getRandomDuration(i);
 
-      // No todos los días tienen entrenamiento (70% de probabilidad)
-      if (i % 3 == 0) continue; // Días de descanso
+      final session = WorkoutSession(
+        id: uuid.v4(),
+        userId: userId,
+        programId: 'program_${(totalWorkouts % 3) + 1}',
+        routineId: routineId,
+        completedAt: date.subtract(Duration(hours: _getRandomHour())),
+        durationMinutes: duration,
+        caloriesBurned: _estimateCalories(duration),
+        notes: _getRandomNote(routineId),
+      );
 
-      // 1-2 entrenamientos por día activo
-      final workoutsToday = (i % 5 == 0) ? 2 : 1;
-
-      for (int j = 0; j < workoutsToday; j++) {
-        final routineId = _getRandomRoutineId(i);
-        final duration = 30 + (i % 3) * 15; // 30, 45 o 60 minutos
-        final session = WorkoutSession(
-          id: uuid.v4(),
-          userId: userId,
-          programId: 'program_${(i % 3) + 1}',
-          routineId: routineId,
-          completedAt: date.subtract(Duration(hours: j * 2)),
-          durationMinutes: duration,
-          caloriesBurned: duration * 5,
-          notes: 'Sesión de prueba',
-        );
-
-        await trackerService.logWorkout(session);
-      }
+      await trackerService.logWorkout(session);
+      totalWorkouts++;
     }
+
+    // Días 8-14 (semana pasada) - Moderadamente activo
+    for (int i = 7; i < 14; i++) {
+      if (i % 2 == 0) continue; // Varios días de descanso
+      final date = now.subtract(Duration(days: i));
+      final routineId = _getRandomRoutineId(i + totalWorkouts);
+      final duration = _getRandomDuration(i);
+
+      final session = WorkoutSession(
+        id: uuid.v4(),
+        userId: userId,
+        programId: 'program_${(totalWorkouts % 3) + 1}',
+        routineId: routineId,
+        completedAt: date.subtract(Duration(hours: _getRandomHour())),
+        durationMinutes: duration,
+        caloriesBurned: _estimateCalories(duration),
+        notes: _getRandomNote(routineId),
+      );
+
+      await trackerService.logWorkout(session);
+      totalWorkouts++;
+    }
+
+    // Días 15-30 (semanas anteriores) - Irregular
+    for (int i = 14; i < 30; i++) {
+      if (i % 3 != 0) continue; // Muchos días de descanso
+      final date = now.subtract(Duration(days: i));
+      final routineId = _getRandomRoutineId(i + totalWorkouts);
+      final duration = _getRandomDuration(i);
+
+      final session = WorkoutSession(
+        id: uuid.v4(),
+        userId: userId,
+        programId: 'program_${(totalWorkouts % 3) + 1}',
+        routineId: routineId,
+        completedAt: date.subtract(Duration(hours: _getRandomHour())),
+        durationMinutes: duration,
+        caloriesBurned: _estimateCalories(duration),
+        notes: _getRandomNote(routineId),
+      );
+
+      await trackerService.logWorkout(session);
+      totalWorkouts++;
+    }
+  }
+
+  static int _getRandomDuration(int seed) {
+    final durations = [30, 35, 40, 45, 50, 60];
+    return durations[seed % durations.length];
+  }
+
+  static int _getRandomHour() {
+    final hours = [6, 7, 8, 17, 18, 19, 20]; // Mañana o tarde
+    return hours[DateTime.now().millisecond % hours.length];
+  }
+
+  static int _estimateCalories(int minutes) {
+    // Estimación más variada: 4-6 calorías por minuto
+    final caloriesPerMin = 4.5 + (DateTime.now().millisecond % 3) * 0.5;
+    return (minutes * caloriesPerMin).round();
+  }
+
+  static String _getRandomNote(String routineId) {
+    final notes = {
+      'routine_1': [
+        '¡Excelente sesión de pecho!',
+        'Aumenté peso en press',
+        'Buen pump',
+        'Me sentí fuerte'
+      ],
+      'routine_2': [
+        'Gran trabajo de espalda',
+        'Dominadas mejoradas',
+        'Remo pesado',
+        'Buena conexión'
+      ],
+      'routine_3': [
+        'Piernas ardiendo 🔥',
+        'Sentadillas profundas',
+        'Día de pierna épico',
+        'Cansado pero satisfecho'
+      ],
+      'routine_4': [
+        'Brazos bombeados',
+        'Buen volumen de brazos',
+        'Bíceps y tríceps trabajados',
+        'Excelente sesión'
+      ],
+    };
+
+    final routineNotes = notes[routineId] ?? ['Buen entrenamiento'];
+    return routineNotes[DateTime.now().millisecond % routineNotes.length];
   }
 
   static String _getRandomRoutineId(int seed) {
@@ -58,30 +148,144 @@ class TestDataGenerator {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Generar Datos de Prueba'),
-        content: const Text(
-          '¿Deseas generar datos de ejemplo para probar el sistema de analítica?\n\n'
-          'Esto creará 30 días de entrenamientos simulados.',
+        backgroundColor: const Color(0xFF1E1E1E),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        title: const Row(
+          children: [
+            Icon(Icons.auto_graph, color: Color(0xFFFF9900), size: 28),
+            SizedBox(width: 12),
+            Text(
+              'Generar Datos de Prueba',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+          ],
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Se generarán 30 días de entrenamientos simulados con el siguiente patrón:',
+              style: TextStyle(color: Color(0xFFB0B0B0), fontSize: 14),
+            ),
+            SizedBox(height: 16),
+            Row(
+              children: [
+                Icon(Icons.check_circle, color: Color(0xFFFF9900), size: 16),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Última semana: muy activo (racha)',
+                    style: TextStyle(color: Colors.white, fontSize: 13),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(Icons.check_circle, color: Color(0xFFFF9900), size: 16),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Semana pasada: moderado',
+                    style: TextStyle(color: Colors.white, fontSize: 13),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(Icons.check_circle, color: Color(0xFFFF9900), size: 16),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Semanas anteriores: irregular',
+                    style: TextStyle(color: Colors.white, fontSize: 13),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Esto te permitirá ver gráficos y estadísticas realistas.',
+              style: TextStyle(
+                color: Color(0xFFFF9900),
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: Color(0xFFB0B0B0)),
+            ),
           ),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
+
+              // Mostrar indicador de carga
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFFFF9900),
+                  ),
+                ),
+              );
+
               await generateSampleWorkouts(context);
+
               if (context.mounted) {
+                Navigator.pop(context); // Cerrar loading
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('¡Datos de prueba generados exitosamente!'),
+                  SnackBar(
+                    content: const Row(
+                      children: [
+                        Icon(Icons.check_circle, color: Colors.white),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            '¡Datos generados! Ve a "Mi Progreso" para verlos',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
                     backgroundColor: Colors.green,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    duration: const Duration(seconds: 4),
                   ),
                 );
               }
             },
-            child: const Text('Generar'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFF9900),
+              foregroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+            ),
+            child: const Text(
+              'Generar',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),

@@ -24,7 +24,11 @@ class LogWorkoutFAB extends StatelessWidget {
     return FloatingActionButton(
       onPressed: () => _showLogWorkoutDialog(context),
       backgroundColor: ColorPalette.primary,
-      child: const Icon(Icons.check_circle, color: ColorPalette.textPrimary),
+      child: const Icon(
+        Icons.check_circle,
+        color: ColorPalette.textPrimary,
+        size: 28,
+      ),
     );
   }
 

@@ -5,6 +5,7 @@ import '../../theme/color_palette.dart';
 import '../../services/workout_tracker_service.dart';
 import '../../services/auth_service.dart';
 import '../../models/analytics_data.dart';
+import '../../utils/test_data_generator.dart';
 
 /// Pantalla principal de analítica y estadísticas
 class AnalyticsScreen extends StatefulWidget {
@@ -59,6 +60,33 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     });
   }
 
+  Future<void> _generateTestData() async {
+    await TestDataGenerator.generateSampleWorkouts(context);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  '¡30 días de datos generados! Los gráficos se actualizarán.',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 4),
+        ),
+      );
+      // Recargar analítica después de generar datos
+      await _loadAnalytics();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,6 +105,16 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.add_chart,
+              color: ColorPalette.primary,
+            ),
+            onPressed: () => _generateTestData(),
+            tooltip: 'Generar datos de prueba',
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(
@@ -208,7 +246,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               child: _buildStatCard(
                 icon: Icons.trending_up,
                 value:
-                    '${_analyticsData!.averageWorkoutsPerWeek.toStringAsFixed(1)}',
+                    _analyticsData!.averageWorkoutsPerWeek.toStringAsFixed(1),
                 label: 'Promedio/Semana',
                 color: Colors.green,
               ),
