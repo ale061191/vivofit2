@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
+import 'package:go_router/go_router.dart';
 import 'package:vivofit/models/routine.dart';
 import 'package:vivofit/theme/app_theme.dart';
 import 'package:vivofit/theme/color_palette.dart';
+import 'package:vivofit/widgets/analytics/log_workout_fab.dart';
 
 /// Pantalla de Detalle de Rutina
 /// Muestra ejercicios, video demostrativo y detalles completos
@@ -367,6 +369,27 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // FAB para ir a analítica
+          FloatingActionButton(
+            heroTag: 'analytics_fab_routine',
+            onPressed: () => context.push('/analytics'),
+            backgroundColor: ColorPalette.cardBackground,
+            child: const Icon(
+              Icons.analytics_outlined,
+              color: ColorPalette.primary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          // FAB para completar entrenamiento
+          LogWorkoutFAB(
+            programId: '', // La rutina puede ser independiente
+            routineId: routine.id,
           ),
         ],
       ),

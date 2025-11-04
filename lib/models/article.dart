@@ -43,8 +43,18 @@ class Article {
   /// Retorna fecha formateada
   String get formattedDate {
     final months = [
-      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
-      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+      'Ene',
+      'Feb',
+      'Mar',
+      'Abr',
+      'May',
+      'Jun',
+      'Jul',
+      'Ago',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dic'
     ];
     return '${publishedAt.day} ${months[publishedAt.month - 1]} ${publishedAt.year}';
   }
@@ -113,6 +123,7 @@ Ideal para hombros fuertes y definidos.
         ''',
         author: 'Dr. Carlos Fitness',
         authorImageUrl: 'https://via.placeholder.com/50',
+        imageUrl: 'assets/images/blog/masaMuscular.webp',
         topic: 'training',
         readTimeMinutes: 5,
         publishedAt: DateTime.now().subtract(const Duration(days: 2)),
@@ -148,6 +159,7 @@ Bebe al menos 2-3 litros de agua al día.
         ''',
         author: 'Nutricionista Ana López',
         authorImageUrl: 'https://via.placeholder.com/50',
+        imageUrl: 'assets/images/blog/nutricionFitness.jpg',
         topic: 'nutrition',
         readTimeMinutes: 8,
         publishedAt: DateTime.now().subtract(const Duration(days: 5)),
@@ -184,6 +196,7 @@ El apoyo social es fundamental para mantener la consistencia.
         ''',
         author: 'Coach Miguel Pérez',
         authorImageUrl: 'https://via.placeholder.com/50',
+        imageUrl: 'assets/images/blog/motivacionFitness.jpg',
         topic: 'wellness',
         readTimeMinutes: 6,
         publishedAt: DateTime.now().subtract(const Duration(days: 7)),
@@ -204,10 +217,11 @@ El apoyo social es fundamental para mantener la consistencia.
   static List<Article> search(List<Article> articles, String query) {
     if (query.isEmpty) return articles;
     final lowerQuery = query.toLowerCase();
-    return articles.where((article) =>
-      article.title.toLowerCase().contains(lowerQuery) ||
-      article.content.toLowerCase().contains(lowerQuery) ||
-      article.tags.any((tag) => tag.toLowerCase().contains(lowerQuery))
-    ).toList();
+    return articles
+        .where((article) =>
+            article.title.toLowerCase().contains(lowerQuery) ||
+            article.content.toLowerCase().contains(lowerQuery) ||
+            article.tags.any((tag) => tag.toLowerCase().contains(lowerQuery)))
+        .toList();
   }
 }

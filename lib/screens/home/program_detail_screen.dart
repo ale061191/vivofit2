@@ -5,6 +5,8 @@ import 'package:vivofit/models/routine.dart';
 import 'package:vivofit/theme/app_theme.dart';
 import 'package:vivofit/theme/color_palette.dart';
 import 'package:vivofit/navigation/app_routes.dart';
+import 'package:vivofit/widgets/analytics/log_workout_fab.dart';
+import 'package:go_router/go_router.dart';
 
 /// Pantalla de Detalle de Programa
 /// Muestra información completa del programa, beneficios, rutinas incluidas y opción de compra
@@ -374,6 +376,28 @@ class ProgramDetailScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // FAB para ir a analítica
+          FloatingActionButton(
+            heroTag: 'analytics_fab',
+            onPressed: () => context.push('/analytics'),
+            backgroundColor: ColorPalette.cardBackground,
+            child: const Icon(
+              Icons.analytics_outlined,
+              color: ColorPalette.primary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          // FAB para completar entrenamiento
+          LogWorkoutFAB(
+            programId: program.id,
+            routineId:
+                programRoutines.isNotEmpty ? programRoutines.first.id : '',
+          ),
+        ],
       ),
     );
   }

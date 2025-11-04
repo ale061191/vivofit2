@@ -6,6 +6,7 @@ import 'package:vivofit/services/auth_service.dart';
 import 'package:vivofit/theme/app_theme.dart';
 import 'package:vivofit/theme/color_palette.dart';
 import 'package:vivofit/navigation/app_routes.dart';
+import 'package:vivofit/utils/test_data_generator.dart';
 import 'package:go_router/go_router.dart';
 
 /// Pantalla de Perfil
@@ -130,6 +131,19 @@ class ProfileScreen extends StatelessWidget {
                   text: 'Mis Membresías (${user.activeMemberships.length})',
                   onPressed: () => AppRoutes.goToActivateMembership(context),
                   icon: Icons.card_membership,
+                  isOutlined: true,
+                ),
+
+                const SizedBox(height: 16),
+
+                // Botón para generar datos de prueba (solo desarrollo)
+                CustomButton(
+                  text: 'Generar Datos de Prueba',
+                  onPressed: () =>
+                      TestDataGenerator.showGenerateDataDialog(context),
+                  icon: Icons.auto_graph,
+                  backgroundColor: ColorPalette.cardBackground,
+                  textColor: ColorPalette.primary,
                   isOutlined: true,
                 ),
 

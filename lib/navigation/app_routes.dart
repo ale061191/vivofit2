@@ -12,6 +12,7 @@ import 'package:vivofit/screens/blog/article_detail_screen.dart';
 import 'package:vivofit/screens/profile/edit_profile_screen.dart';
 import 'package:vivofit/screens/membership/activate_membership_screen.dart';
 import 'package:vivofit/screens/payment/payment_screen.dart';
+import 'package:vivofit/screens/analytics/analytics_screen.dart';
 
 /// Configuración de rutas de la aplicación usando GoRouter
 class AppRoutes {
@@ -28,6 +29,7 @@ class AppRoutes {
   static const String editProfile = '/profile/edit';
   static const String activateMembership = '/membership/activate';
   static const String payment = '/payment/:programId';
+  static const String analytics = '/analytics';
 
   /// Configuración de GoRouter
   static final GoRouter router = GoRouter(
@@ -122,6 +124,12 @@ class AppRoutes {
           return PaymentScreen(programId: programId);
         },
       ),
+
+      // Analítica y Progreso
+      GoRoute(
+        path: analytics,
+        builder: (context, state) => const AnalyticsScreen(),
+      ),
     ],
 
     // Manejo de errores de navegación
@@ -183,8 +191,9 @@ class AppRoutes {
   }
 
   /// Navega a activar membresía
-  static void goToActivateMembership(BuildContext context, {String? programId}) {
-    final uri = programId != null 
+  static void goToActivateMembership(BuildContext context,
+      {String? programId}) {
+    final uri = programId != null
         ? '$activateMembership?programId=$programId'
         : activateMembership;
     context.push(uri);

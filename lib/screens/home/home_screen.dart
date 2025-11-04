@@ -6,6 +6,7 @@ import 'package:vivofit/models/routine.dart';
 import 'package:vivofit/navigation/app_routes.dart';
 import 'package:vivofit/theme/app_theme.dart';
 import 'package:vivofit/theme/color_palette.dart';
+import 'package:vivofit/widgets/analytics/progress_card.dart';
 
 /// Pantalla Home
 /// Muestra programas y rutinas de ejercicio
@@ -49,6 +50,12 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildHeroSection(),
 
               const SizedBox(height: 24),
+
+              // Tarjeta de progreso y analítica
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: ProgressCard(),
+              ),
 
               // Programas destacados
               Padding(
