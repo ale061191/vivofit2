@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/color_palette.dart';
-import '../../services/workout_tracker_service.dart';
-import '../../services/auth_service.dart';
+import '../../services/supabase_workout_service.dart';
+import '../../services/supabase_auth_service.dart';
 
 /// Tarjeta de progreso destacada para el Home
+/// Migrada a Supabase - Noviembre 2025
 class ProgressCard extends StatefulWidget {
   const ProgressCard({super.key});
 
@@ -30,13 +31,13 @@ class _ProgressCardState extends State<ProgressCard>
   }
 
   Future<void> _loadStats() async {
-    final authService = context.read<AuthService>();
+    final authService = context.read<SupabaseAuthService>();
     final userId = authService.currentUser?.id ?? '';
 
     if (userId.isEmpty) return;
 
-    final trackerService = context.read<WorkoutTrackerService>();
-    final stats = await trackerService.getQuickStats(userId);
+    final workoutService = context.read<SupabaseWorkoutService>();
+    final stats = await workoutService.getQuickStats(userId);
 
     if (mounted) {
       setState(() {

@@ -245,6 +245,41 @@ class SupabaseWorkoutService extends ChangeNotifier {
     }
   }
 
+  /// Obtener estadísticas rápidas para el HomeScreen
+  Future<Map<String, dynamic>> getQuickStats(String userId) async {
+    try {
+      final allSessions = await getAllSessions();
+      final totalWorkouts = allSessions.length;
+      final totalMinutes = allSessions.fold<int>(
+        0,
+        (sum, s) => sum + s.durationMinutes,
+      );
+      final totalCalories = allSessions.fold<int>(
+        0,
+        (sum, s) => sum + s.caloriesBurned,
+      );
+
+      // Calcular racha actual
+      final streaks = _calculateStreaks(allSessions);
+      final currentStreak = streaks['current'] ?? 0;
+
+      return {
+        'currentStreak': currentStreak,
+        'totalWorkouts': totalWorkouts,
+        'totalMinutes': totalMinutes,
+        'totalCalories': totalCalories,
+      };
+    } catch (e) {
+      debugPrint('Error al obtener quick stats: $e');
+      return {
+        'currentStreak': 0,
+        'totalWorkouts': 0,
+        'totalMinutes': 0,
+        'totalCalories': 0,
+      };
+    }
+  }
+
   /// Generar analítica para un rango de fechas
   Future<Map<String, dynamic>> generateAnalytics(
     String userId,
