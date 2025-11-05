@@ -1,15 +1,14 @@
+import 'api_keys.dart';
+
 /// Configuración de Supabase
-/// IMPORTANTE: Estas credenciales deben mantenerse privadas y seguras
+/// ✅ SEGURIDAD: Las credenciales ahora se cargan desde api_keys.dart
+/// que está protegido por .gitignore y NO se sube a GitHub
 class SupabaseConfig {
-  // TODO: Antes de entregar al cliente, mover estas credenciales
-  // a variables de entorno o configuración externa
+  /// URL del proyecto Supabase (desde api_keys.dart)
+  static String get supabaseUrl => ApiKeys.supabaseUrl;
 
-  /// URL del proyecto Supabase
-  static const String supabaseUrl = 'https://awtvethqcigauaxyzqhz.supabase.co';
-
-  /// Anon Key (clave pública)
-  static const String supabaseAnonKey =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3dHZldGhxY2lnYXVheHl6cWh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyOTEwNzYsImV4cCI6MjA3Nzg2NzA3Nn0.6bTl_DGdWMmfNIpfQRzSZ7OPbBrjk2n52MatjPlgEDA';
+  /// Anon Key - clave pública (desde api_keys.dart)
+  static String get supabaseAnonKey => ApiKeys.supabaseAnonKey;
 
   // Nombres de tablas
   static const String usersTable = 'users';
