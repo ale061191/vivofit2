@@ -40,13 +40,13 @@ class AnalyticsData {
   /// Crear desde respuesta de Supabase
   factory AnalyticsData.fromSupabaseResponse(Map<String, dynamic> data) {
     final dailyActivitiesList = (data['dailyActivities'] as List<dynamic>?)
-        ?.map((activity) => DailyActivity(
-              date: activity['date'] as DateTime,
-              workoutsCompleted: activity['workoutsCompleted'] as int,
-              minutesExercised: 0, // No se calcula en el servicio aún
-              caloriesBurned: activity['caloriesBurned'] as int,
-            ))
-        .toList() ??
+            ?.map((activity) => DailyActivity(
+                  date: activity['date'] as DateTime,
+                  workoutsCompleted: activity['workoutsCompleted'] as int,
+                  minutesExercised: 0, // No se calcula en el servicio aún
+                  caloriesBurned: activity['caloriesBurned'] as int,
+                ))
+            .toList() ??
         [];
 
     return AnalyticsData(
@@ -55,9 +55,12 @@ class AnalyticsData {
       longestStreak: data['longestStreak'] as int,
       totalMinutes: data['totalMinutes'] as int,
       totalCalories: data['totalCalories'] as int,
-      averageWorkoutsPerWeek: (data['averageWorkoutsPerWeek'] as num).toDouble(),
-      workoutsByProgram: Map<String, int>.from(data['workoutsByProgram'] as Map),
-      workoutsByRoutine: Map<String, int>.from(data['workoutsByRoutine'] as Map),
+      averageWorkoutsPerWeek:
+          (data['averageWorkoutsPerWeek'] as num).toDouble(),
+      workoutsByProgram:
+          Map<String, int>.from(data['workoutsByProgram'] as Map),
+      workoutsByRoutine:
+          Map<String, int>.from(data['workoutsByRoutine'] as Map),
       dailyActivities: dailyActivitiesList,
     );
   }

@@ -302,12 +302,13 @@ class SupabaseWorkoutService extends ChangeNotifier {
       final streaks = _calculateStreaks(allSessions);
 
       // Calcular actividad diaria
-      final dailyActivities = _calculateDailyActivities(sessions, startDate, endDate);
+      final dailyActivities =
+          _calculateDailyActivities(sessions, startDate, endDate);
 
       // Agrupar por rutina
       final workoutsByRoutine = <String, int>{};
       for (var session in sessions) {
-        workoutsByRoutine[session.routineId] = 
+        workoutsByRoutine[session.routineId] =
             (workoutsByRoutine[session.routineId] ?? 0) + 1;
       }
 
@@ -355,7 +356,8 @@ class SupabaseWorkoutService extends ChangeNotifier {
 
     // Obtener días únicos con entrenamientos
     final workoutDays = sortedSessions
-        .map((s) => DateTime(s.completedAt.year, s.completedAt.month, s.completedAt.day))
+        .map((s) => DateTime(
+            s.completedAt.year, s.completedAt.month, s.completedAt.day))
         .toSet()
         .toList()
       ..sort((a, b) => b.compareTo(a));
