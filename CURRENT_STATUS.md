@@ -1,12 +1,23 @@
 # 📊 Estado Actual de Migración a Supabase - VivoFit
 
+## ⚠️ ADVERTENCIA DE SEGURIDAD
+
+**🔒 Este documento NO contiene credenciales reales.**
+- ✅ Credenciales reales están en `lib/config/api_keys.dart` (protegido por `.gitignore`)
+- ✅ Este archivo solo contiene placeholders y ejemplos
+- ❌ **NUNCA** expongas credenciales reales en documentación
+
+---
+
 ## ✅ YA IMPLEMENTADO
 
 ### 1. Configuración Base
 - ✅ Supabase inicializado en `main.dart`
-- ✅ Credenciales configuradas en `supabase_config.dart`
-- ✅ URL: `https://awtvethqcigauaxyzqhz.supabase.co`
+- ✅ Credenciales configuradas en `lib/config/api_keys.dart` (protegido por .gitignore)
+- ✅ URL: `https://[TU-PROYECTO].supabase.co` (placeholder - ver api_keys.dart)
 - ✅ Dependency: `supabase_flutter: ^2.5.0`
+
+**⚠️ NOTA DE SEGURIDAD:** Las credenciales reales están en `lib/config/api_keys.dart` y están protegidas por `.gitignore`.
 
 ### 2. Servicios Migrados
 - ✅ **SupabaseAuthService** - Autenticación completa
