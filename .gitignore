@@ -78,8 +78,10 @@ coverage/
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
 # Archivos privados con credenciales
+.env
 .env.local
 .env.*.local
 *.key
 *.pem
 secrets/
+lib/config/api_keys.dart

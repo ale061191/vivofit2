@@ -1,9 +1,23 @@
+import 'api_keys.dart';
+
 /// Configuración de Google Gemini AI
-/// IMPORTANTE: Esta API Key debe mantenerse privada y segura
+///
+/// ✅ SEGURIDAD: La API Key ahora se carga desde un archivo privado (api_keys.dart)
+/// que está protegido por .gitignore y NO se sube a GitHub
+///
+/// Para configurar:
+/// 1. Copia api_keys.example.dart y renómbralo a api_keys.dart
+/// 2. Agrega tu clave real de Gemini en api_keys.dart
 class GeminiConfig {
-  // TODO: Antes de entregar al cliente, eliminar esta API Key
-  // y usar variables de entorno o configuración externa
-  static const String apiKey = 'AIzaSyBYXhvyrQflZUkaFTdgPTmOaslA4rWiWRo';
+  // La API Key se carga desde el archivo privado api_keys.dart
+  static String get apiKey {
+    if (!ApiKeys.isConfigured) {
+      throw Exception('⚠️ API Key no configurada. '
+          'Por favor copia api_keys.example.dart a api_keys.dart '
+          'y configura tu clave de Google Gemini.');
+    }
+    return ApiKeys.geminiApiKey;
+  }
 
   // Modelo a utilizar para análisis nutricional
   static const String model = 'gemini-1.5-flash';

@@ -145,6 +145,7 @@ Ver `pubspec.yaml` para lista completa de dependencias permitidas.
 5. Agregar animaciones no solicitadas
 6. Cambiar la arquitectura de navegación (GoRouter)
 7. Modificar el patrón de estado (Provider)
+8. **🔐 EXPONER claves API o credenciales en código** - Usar SIEMPRE `lib/config/api_keys.dart` (protegido por .gitignore)
 
 ### ✅ SIEMPRE hacer:
 1. Consultar antes de expandir funcionalidad
@@ -153,6 +154,7 @@ Ver `pubspec.yaml` para lista completa de dependencias permitidas.
 4. Crear componentes reutilizables y desacoplados
 5. Validar instrucciones antes de implementar
 6. Solicitar aprobación para cambios estructurales
+7. **🔐 Proteger credenciales** usando `lib/config/api_keys.dart` (nunca hardcodear API keys)
 
 ---
 
