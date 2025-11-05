@@ -213,6 +213,191 @@ class SupabaseWorkoutService extends ChangeNotifier {
     }
   }
 
+  /// Obtener todas las sesiones de entrenamiento del usuario
+  Future<List<WorkoutSession>> getAllSessions() async {
+    try {
+      final userId = _supabase.auth.currentUser?.id;
+      if (userId == null) return [];
+
+      final response = await _supabase
+          .from(SupabaseConfig.workoutSessionsTable)
+          .select()
+          .eq('user_id', userId)
+          .order('completed_at', ascending: false);
+
+      return response
+          .map<WorkoutSession>((data) => _workoutSessionFromSupabase(data))
+          .toList();
+    } catch (e) {
+      debugPrint('Error al obtener todas las sesiones: $e');
+      return [];
+    }
+  }
+
+  /// Obtener total de calorías quemadas del usuario
+  Future<double> getTotalCaloriesBurned(String userId) async {
+    try {
+      final stats = await getWorkoutStats();
+      return stats['totalCalories'].toDouble();
+    } catch (e) {
+      debugPrint('Error al obtener total de calorías: $e');
+      return 0.0;
+    }
+  }
+
+  /// Generar analítica para un rango de fechas
+  Future<Map<String, dynamic>> generateAnalytics(
+    String userId,
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    try {
+      final sessions = await getWorkoutSessions(
+        startDate: startDate,
+        endDate: endDate,
+      );
+
+      final stats = await getWorkoutStats(
+        startDate: startDate,
+        endDate: endDate,
+      );
+
+      // Calcular rachas
+      final allSessions = await getAllSessions();
+      final streaks = _calculateStreaks(allSessions);
+
+      // Calcular actividad diaria
+      final dailyActivities = _calculateDailyActivities(sessions, startDate, endDate);
+
+      // Agrupar por rutina
+      final workoutsByRoutine = <String, int>{};
+      for (var session in sessions) {
+        workoutsByRoutine[session.routineId] = 
+            (workoutsByRoutine[session.routineId] ?? 0) + 1;
+      }
+
+      // Calcular promedio de entrenamientos por semana
+      final daysDiff = endDate.difference(startDate).inDays + 1;
+      final weeks = daysDiff / 7.0;
+      final avgPerWeek = weeks > 0 ? stats['totalSessions'] / weeks : 0.0;
+
+      return {
+        'totalWorkouts': stats['totalSessions'],
+        'totalMinutes': stats['totalMinutes'],
+        'totalCalories': stats['totalCalories'],
+        'currentStreak': streaks['current'],
+        'longestStreak': streaks['longest'],
+        'averageWorkoutsPerWeek': avgPerWeek,
+        'dailyActivities': dailyActivities,
+        'workoutsByRoutine': workoutsByRoutine,
+        'workoutsByProgram': <String, int>{}, // Puede expandirse en el futuro
+      };
+    } catch (e) {
+      debugPrint('Error al generar analítica: $e');
+      return {
+        'totalWorkouts': 0,
+        'totalMinutes': 0,
+        'totalCalories': 0,
+        'currentStreak': 0,
+        'longestStreak': 0,
+        'averageWorkoutsPerWeek': 0.0,
+        'dailyActivities': [],
+        'workoutsByRoutine': {},
+        'workoutsByProgram': {},
+      };
+    }
+  }
+
+  /// Calcular rachas de entrenamiento
+  Map<String, int> _calculateStreaks(List<WorkoutSession> sessions) {
+    if (sessions.isEmpty) {
+      return {'current': 0, 'longest': 0};
+    }
+
+    // Ordenar por fecha descendente
+    final sortedSessions = List<WorkoutSession>.from(sessions)
+      ..sort((a, b) => b.completedAt.compareTo(a.completedAt));
+
+    // Obtener días únicos con entrenamientos
+    final workoutDays = sortedSessions
+        .map((s) => DateTime(s.completedAt.year, s.completedAt.month, s.completedAt.day))
+        .toSet()
+        .toList()
+      ..sort((a, b) => b.compareTo(a));
+
+    int currentStreak = 0;
+    int longestStreak = 0;
+    int tempStreak = 0;
+
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+
+    for (int i = 0; i < workoutDays.length; i++) {
+      if (i == 0) {
+        // Verificar si la racha actual está activa
+        final daysDiff = todayDate.difference(workoutDays[i]).inDays;
+        if (daysDiff <= 1) {
+          currentStreak = 1;
+          tempStreak = 1;
+        }
+      } else {
+        final daysDiff = workoutDays[i - 1].difference(workoutDays[i]).inDays;
+        if (daysDiff == 1) {
+          tempStreak++;
+          if (currentStreak > 0) currentStreak++;
+        } else {
+          if (tempStreak > longestStreak) longestStreak = tempStreak;
+          tempStreak = 1;
+          if (currentStreak > 0) currentStreak = 0; // Racha rota
+        }
+      }
+    }
+
+    if (tempStreak > longestStreak) longestStreak = tempStreak;
+    if (currentStreak > longestStreak) longestStreak = currentStreak;
+
+    return {'current': currentStreak, 'longest': longestStreak};
+  }
+
+  /// Calcular actividad diaria
+  List<Map<String, dynamic>> _calculateDailyActivities(
+    List<WorkoutSession> sessions,
+    DateTime startDate,
+    DateTime endDate,
+  ) {
+    final activities = <Map<String, dynamic>>[];
+    final daysDiff = endDate.difference(startDate).inDays + 1;
+
+    // Agrupar sesiones por fecha
+    final sessionsByDate = <DateTime, List<WorkoutSession>>{};
+    for (var session in sessions) {
+      final date = DateTime(
+        session.completedAt.year,
+        session.completedAt.month,
+        session.completedAt.day,
+      );
+      sessionsByDate[date] = [...(sessionsByDate[date] ?? []), session];
+    }
+
+    // Crear entrada para cada día del período
+    for (int i = 0; i < daysDiff; i++) {
+      final date = startDate.add(Duration(days: i));
+      final dateKey = DateTime(date.year, date.month, date.day);
+      final daySessions = sessionsByDate[dateKey] ?? [];
+
+      activities.add({
+        'date': dateKey,
+        'workoutsCompleted': daySessions.length,
+        'caloriesBurned': daySessions.fold<int>(
+          0,
+          (sum, session) => sum + session.caloriesBurned,
+        ),
+      });
+    }
+
+    return activities;
+  }
+
   /// Convertir datos de Supabase a modelo WorkoutSession
   WorkoutSession _workoutSessionFromSupabase(Map<String, dynamic> data) {
     return WorkoutSession(

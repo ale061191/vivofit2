@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../theme/color_palette.dart';
-import '../../services/workout_tracker_service.dart';
-import '../../services/auth_service.dart';
+import '../../services/supabase_workout_service.dart';
+import '../../services/supabase_auth_service.dart';
+import '../../services/supabase_user_service.dart';
 import '../../models/analytics_data.dart';
 import '../../models/bmi_progress.dart';
 import '../../utils/test_data_generator.dart';
 import '../../widgets/analytics/bmi_progress_chart.dart';
 
 /// Pantalla principal de analítica y estadísticas
+/// Migrada a Supabase - Noviembre 2025
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
 
@@ -30,8 +32,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 
   Future<void> _checkAndGenerateTestData() async {
-    final trackerService = context.read<WorkoutTrackerService>();
-    final sessions = await trackerService.getAllSessions();
+    final workoutService = context.read<SupabaseWorkoutService>();
+    final sessions = await workoutService.getAllSessions();
 
     // Si no hay datos, generar automáticamente
     if (sessions.isEmpty) {
@@ -45,9 +47,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   Future<void> _loadAnalytics() async {
     setState(() => _isLoading = true);
 
-    final authService = context.read<AuthService>();
+    final authService = context.read<SupabaseAuthService>();
     final userId = authService.currentUser?.id ?? '';
-    final trackerService = context.read<WorkoutTrackerService>();
+    final workoutService = context.read<SupabaseWorkoutService>();
+    final userService = context.read<SupabaseUserService>();
 
     final now = DateTime.now();
     DateTime startDate;
@@ -64,21 +67,23 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         break;
     }
 
-    final analytics = await trackerService.generateAnalytics(
+    // Obtener analítica desde Supabase
+    final analyticsResponse = await workoutService.generateAnalytics(
       userId,
       startDate,
       now,
     );
 
+    final analytics = AnalyticsData.fromSupabaseResponse(analyticsResponse);
+
     // Calcular progreso de IMC
     BMIProgress? bmiProgress;
-    final user = authService.currentUser;
+    final user = await userService.getUserProfile(userId);
     if (user != null && user.height != null && user.weight != null) {
-      final totalCalories = await trackerService.getTotalCaloriesBurned(userId);
+      final totalCalories = await workoutService.getTotalCaloriesBurned(userId);
       final currentBMI = user.imc ?? 0;
 
-      // Simular peso inicial (puedes almacenar esto en SharedPreferences)
-      // Por ahora, asumimos un 10% más de peso inicial si hay calorías quemadas
+      // Calcular peso inicial basado en calorías quemadas
       final weightEquivalentBurned = totalCalories / 7700; // 7700 kcal ≈ 1 kg
       final initialWeight = user.weight! + weightEquivalentBurned;
       final heightInMeters = user.height! / 100;
