@@ -1,5 +1,16 @@
 # 🚀 Plan de Migración a Supabase y Generación de APK
 
+## ⚠️ ADVERTENCIA DE SEGURIDAD
+
+**🔒 NUNCA expongas tus credenciales reales en este archivo.**
+
+- ✅ Este archivo contiene **SOLO ejemplos** y placeholders
+- ✅ Las credenciales reales están en `lib/config/api_keys.dart` (protegido por `.gitignore`)
+- ❌ **NUNCA** reemplaces los placeholders con claves reales en archivos de documentación
+- ❌ **NUNCA** hagas commit de `api_keys.dart` o archivos similares
+
+---
+
 ## 📋 Índice
 1. [Configuración de Supabase](#1-configuración-de-supabase)
 2. [Migración de Datos](#2-migración-de-datos)
@@ -30,17 +41,19 @@ Actualizar `lib/config/api_keys.dart`:
 ```dart
 class ApiKeys {
   // Google Gemini API Key
-  static const String geminiApiKey = 'AIzaSyDRrCJTvBAT59ytRWg3vreuuJplWu7YgTc';
+  static const String geminiApiKey = 'TU_GEMINI_API_KEY_AQUI';
   
   // Supabase Configuration
   static const String supabaseUrl = 'https://tu-proyecto.supabase.co';
   static const String supabaseAnonKey = 'tu-clave-publica-aqui';
   
   static bool get isConfigured => 
-    geminiApiKey != 'TU_CLAVE_AQUI' && 
+    geminiApiKey != 'TU_GEMINI_API_KEY_AQUI' && 
     supabaseUrl != 'https://tu-proyecto.supabase.co';
 }
 ```
+
+**⚠️ IMPORTANTE:** Este archivo (`lib/config/api_keys.dart`) está protegido por `.gitignore` y NUNCA debe ser compartido públicamente.
 
 ---
 
