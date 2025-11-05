@@ -37,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Primero cargar usuario
     final userService = context.read<SupabaseUserService>();
     await userService.getCurrentUser();
-    
+
     // Luego cargar BMI
     _loadBMIProgress();
   }
@@ -45,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _loadBMIProgress() async {
     try {
       final userService = context.read<SupabaseUserService>();
-      
+
       // El usuario ya debería estar cargado en el servicio
       final user = userService.currentUser;
 
