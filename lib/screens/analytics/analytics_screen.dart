@@ -5,7 +5,9 @@ import '../../theme/color_palette.dart';
 import '../../services/workout_tracker_service.dart';
 import '../../services/auth_service.dart';
 import '../../models/analytics_data.dart';
+import '../../models/bmi_progress.dart';
 import '../../utils/test_data_generator.dart';
+import '../../widgets/analytics/bmi_progress_chart.dart';
 
 /// Pantalla principal de analítica y estadísticas
 class AnalyticsScreen extends StatefulWidget {
@@ -18,12 +20,26 @@ class AnalyticsScreen extends StatefulWidget {
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
   AnalyticsPeriod _selectedPeriod = AnalyticsPeriod.week;
   AnalyticsData? _analyticsData;
+  BMIProgress? _bmiProgress;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadAnalytics();
+    _checkAndGenerateTestData();
+  }
+
+  Future<void> _checkAndGenerateTestData() async {
+    final trackerService = context.read<WorkoutTrackerService>();
+    final sessions = await trackerService.getAllSessions();
+
+    // Si no hay datos, generar automáticamente
+    if (sessions.isEmpty) {
+      await TestDataGenerator.generateSampleWorkouts(context);
+    }
+
+    // Cargar analítica después de verificar/generar datos
+    await _loadAnalytics();
   }
 
   Future<void> _loadAnalytics() async {
@@ -54,8 +70,35 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       now,
     );
 
+    // Calcular progreso de IMC
+    BMIProgress? bmiProgress;
+    final user = authService.currentUser;
+    if (user != null && user.height != null && user.weight != null) {
+      final totalCalories = await trackerService.getTotalCaloriesBurned(userId);
+      final currentBMI = user.imc ?? 0;
+
+      // Simular peso inicial (puedes almacenar esto en SharedPreferences)
+      // Por ahora, asumimos un 10% más de peso inicial si hay calorías quemadas
+      final weightEquivalentBurned = totalCalories / 7700; // 7700 kcal ≈ 1 kg
+      final initialWeight = user.weight! + weightEquivalentBurned;
+      final heightInMeters = user.height! / 100;
+      final initialBMI = initialWeight / (heightInMeters * heightInMeters);
+
+      bmiProgress = BMIProgress.initial(
+        currentBMI: currentBMI,
+        currentWeight: user.weight!,
+        height: user.height!,
+      ).copyWith(
+        initialBMI: initialBMI,
+        initialWeight: initialWeight,
+        totalCaloriesBurned: totalCalories,
+        lastUpdateDate: DateTime.now(),
+      );
+    }
+
     setState(() {
       _analyticsData = analytics;
+      _bmiProgress = bmiProgress;
       _isLoading = false;
     });
   }
@@ -131,6 +174,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   const SizedBox(height: 24),
                   _buildStatsCards(),
                   const SizedBox(height: 24),
+                  if (_bmiProgress != null) ...[
+                    BMIProgressChart(bmiProgress: _bmiProgress!),
+                    const SizedBox(height: 24),
+                  ],
                   _buildActivityChart(),
                   const SizedBox(height: 24),
                   _buildWorkoutDistribution(),

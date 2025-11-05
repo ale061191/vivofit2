@@ -234,24 +234,31 @@ class TestDataGenerator {
           ),
           ElevatedButton(
             onPressed: () async {
-              Navigator.pop(context);
+              // Guardar el contexto antes de cualquier operación asíncrona
+              final scaffoldMessenger = ScaffoldMessenger.of(context);
+              final navigator = Navigator.of(context);
+
+              navigator.pop(); // Cerrar diálogo de confirmación
 
               // Mostrar indicador de carga
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (context) => const Center(
+                builder: (dialogContext) => const Center(
                   child: CircularProgressIndicator(
                     color: Color(0xFFFF9900),
                   ),
                 ),
               );
 
-              await generateSampleWorkouts(context);
+              try {
+                await generateSampleWorkouts(context);
 
-              if (context.mounted) {
-                Navigator.pop(context); // Cerrar loading
-                ScaffoldMessenger.of(context).showSnackBar(
+                // Cerrar loading
+                navigator.pop();
+
+                // Mostrar mensaje de éxito
+                scaffoldMessenger.showSnackBar(
                   SnackBar(
                     content: const Row(
                       children: [
@@ -259,7 +266,7 @@ class TestDataGenerator {
                         SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            '¡Datos generados! Ve a "Mi Progreso" para verlos',
+                            '¡30 días de datos generados! Los gráficos se actualizarán',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -270,6 +277,30 @@ class TestDataGenerator {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
+                    duration: const Duration(seconds: 4),
+                  ),
+                );
+              } catch (e) {
+                // Cerrar loading en caso de error
+                navigator.pop();
+
+                // Mostrar mensaje de error
+                scaffoldMessenger.showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: [
+                        const Icon(Icons.error, color: Colors.white),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Error al generar datos: $e',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                    backgroundColor: Colors.red,
+                    behavior: SnackBarBehavior.floating,
                     duration: const Duration(seconds: 4),
                   ),
                 );

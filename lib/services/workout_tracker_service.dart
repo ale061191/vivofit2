@@ -268,11 +268,21 @@ class WorkoutTrackerService {
     final totalWorkouts = allSessions.length;
     final totalMinutes =
         allSessions.fold<int>(0, (sum, s) => sum + s.durationMinutes);
+    final totalCalories =
+        allSessions.fold<int>(0, (sum, s) => sum + s.caloriesBurned);
 
     return {
       'currentStreak': currentStreak,
       'totalWorkouts': totalWorkouts,
       'totalMinutes': totalMinutes,
+      'totalCalories': totalCalories,
     };
+  }
+
+  /// Calcula el total de calorías quemadas por un usuario
+  Future<int> getTotalCaloriesBurned(String userId) async {
+    final userSessions = await getUserSessions(userId);
+    return userSessions.fold<int>(
+        0, (sum, session) => sum + session.caloriesBurned);
   }
 }

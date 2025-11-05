@@ -3,13 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:vivofit/components/custom_button.dart';
 import 'package:vivofit/navigation/app_routes.dart';
-import 'package:vivofit/services/auth_service.dart';
-import 'package:vivofit/services/user_service.dart';
+import 'package:vivofit/services/supabase_auth_service.dart';
+import 'package:vivofit/services/supabase_user_service.dart';
 import 'package:vivofit/theme/app_theme.dart';
 import 'package:vivofit/theme/color_palette.dart';
 import 'package:vivofit/utils/validators.dart';
 
-/// Pantalla de Login
+/// Pantalla de Login con Supabase
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -33,26 +33,37 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final authService = context.read<AuthService>();
-    final userService = context.read<UserService>();
+    final authService = context.read<SupabaseAuthService>();
+    final userService = context.read<SupabaseUserService>();
 
-    final success = await authService.login(
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-    );
+    try {
+      final success = await authService.login(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    if (success) {
-      // Sincronizar usuario con UserService
-      if (authService.currentUser != null) {
-        userService.setUser(authService.currentUser!);
+      if (success) {
+        // Cargar datos del usuario desde Supabase
+        await userService.getCurrentUser();
+
+        if (!mounted) return;
+        context.go(AppRoutes.main);
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Credenciales incorrectas'),
+            backgroundColor: ColorPalette.error,
+          ),
+        );
       }
-      context.go(AppRoutes.main);
-    } else {
+    } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authService.error ?? 'Error al iniciar sesión'),
+          content: Text('Error: $e'),
           backgroundColor: ColorPalette.error,
         ),
       );
@@ -164,12 +175,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 24),
 
                 // Botón de login
-                Consumer<AuthService>(
-                  builder: (context, authService, _) {
+                Consumer<SupabaseUserService>(
+                  builder: (context, userService, _) {
                     return CustomButton(
                       text: 'Iniciar Sesión',
                       onPressed: _handleLogin,
-                      isLoading: authService.isLoading,
+                      isLoading: userService.isLoading,
                     );
                   },
                 ),
@@ -193,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 24),
 
-                // Demo credentials hint
+                // Info de prueba con Supabase
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -203,7 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: const Column(
                     children: [
                       Text(
-                        'Demo',
+                        '🚀 Conectado con Supabase',
                         style: TextStyle(
                           color: ColorPalette.primary,
                           fontWeight: FontWeight.bold,
@@ -211,18 +222,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'Email: demo@vivofit.com',
+                        'Regístrate para crear tu cuenta',
                         style: TextStyle(
                           color: ColorPalette.textSecondary,
                           fontSize: 12,
                         ),
+                        textAlign: TextAlign.center,
                       ),
+                      SizedBox(height: 4),
                       Text(
-                        'Password: 123456',
+                        'o usa credenciales de prueba si las creaste',
                         style: TextStyle(
                           color: ColorPalette.textSecondary,
-                          fontSize: 12,
+                          fontSize: 11,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),

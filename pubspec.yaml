@@ -40,6 +40,15 @@ dependencies:
   # HTTP & API
   http: ^1.2.0
   
+  # AI & Machine Learning
+  google_generative_ai: ^0.2.2
+  
+  # Permissions
+  permission_handler: ^11.3.0
+  
+  # Database - Supabase
+  supabase_flutter: ^2.5.0
+  
   # Local Storage
   shared_preferences: ^2.2.2
   

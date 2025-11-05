@@ -3,13 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:vivofit/components/custom_button.dart';
 import 'package:vivofit/navigation/app_routes.dart';
-import 'package:vivofit/services/auth_service.dart';
-import 'package:vivofit/services/user_service.dart';
+import 'package:vivofit/services/supabase_auth_service.dart';
+import 'package:vivofit/services/supabase_user_service.dart';
 import 'package:vivofit/theme/app_theme.dart';
 import 'package:vivofit/theme/color_palette.dart';
 import 'package:vivofit/utils/validators.dart';
 
-/// Pantalla de Registro
+/// Pantalla de Registro con Supabase
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -38,27 +38,47 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final authService = context.read<AuthService>();
-    final userService = context.read<UserService>();
+    final authService = context.read<SupabaseAuthService>();
+    final userService = context.read<SupabaseUserService>();
 
-    final success = await authService.register(
-      name: _nameController.text.trim(),
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-    );
+    try {
+      final userId = await authService.register(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    if (success) {
-      // Sincronizar usuario con UserService
-      if (authService.currentUser != null) {
-        userService.setUser(authService.currentUser!);
+      if (userId != null) {
+        // Cargar datos del usuario desde Supabase
+        await userService.getCurrentUser();
+
+        if (!mounted) return;
+
+        // Mostrar mensaje de éxito
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Cuenta creada exitosamente!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        context.go(AppRoutes.main);
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error al crear cuenta'),
+            backgroundColor: ColorPalette.error,
+          ),
+        );
       }
-      context.go(AppRoutes.main);
-    } else {
+    } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authService.error ?? 'Error al registrarse'),
+          content: Text('Error: $e'),
           backgroundColor: ColorPalette.error,
         ),
       );
@@ -168,12 +188,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                Consumer<AuthService>(
-                  builder: (context, authService, _) {
+                Consumer<SupabaseUserService>(
+                  builder: (context, userService, _) {
                     return CustomButton(
                       text: 'Registrarse',
                       onPressed: _handleRegister,
-                      isLoading: authService.isLoading,
+                      isLoading: userService.isLoading,
                     );
                   },
                 ),
