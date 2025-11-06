@@ -20,9 +20,10 @@ class GeminiConfig {
   }
 
   // Modelo a utilizar para análisis nutricional
-  // gemini-pro-vision es el modelo específico para análisis de imágenes
-  // Referencia: https://ai.google.dev/gemini-api/docs/models/gemini
-  static const String model = 'gemini-pro-vision';
+  // gemini-1.5-flash-latest es el modelo estable actual para visión
+  // Soporta multimodal (texto + imagen) y es el más eficiente
+  // Referencia: https://ai.google.dev/gemini-api/docs/models/gemini#gemini-1.5-flash
+  static const String model = 'gemini-1.5-flash-latest';
 
   // Configuración de seguridad
   static const int maxOutputTokens = 2048;

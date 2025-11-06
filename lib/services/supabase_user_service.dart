@@ -41,23 +41,26 @@ class SupabaseUserService extends ChangeNotifier {
         await _supabase.from(SupabaseConfig.usersTable).insert({
           'id': authUser.id,
           'email': authUser.email!,
-          'name': authUser.userMetadata?['name'] ?? authUser.email!.split('@')[0],
+          'name':
+              authUser.userMetadata?['name'] ?? authUser.email!.split('@')[0],
           'created_at': DateTime.now().toIso8601String(),
         });
-        
+
         // Volver a consultar
         final newResponse = await _supabase
             .from(SupabaseConfig.usersTable)
             .select()
             .eq('id', authUser.id)
-            .single();
-        
+            .single() as Map<String, dynamic>;
+
         _currentUser = _userFromSupabase(newResponse);
       } else {
-        _currentUser = _userFromSupabase(response);
+        // Cast explícito para resolver el error de tipo Object?
+        _currentUser = _userFromSupabase(response as Map<String, dynamic>);
       }
 
-      debugPrint('✅ Usuario cargado: ${_currentUser?.name} (${_currentUser?.email})');
+      debugPrint(
+          '✅ Usuario cargado: ${_currentUser?.name} (${_currentUser?.email})');
       return _currentUser;
     } catch (e) {
       debugPrint('❌ Error al obtener usuario: $e');
@@ -68,7 +71,8 @@ class SupabaseUserService extends ChangeNotifier {
           _currentUser = app_user.User(
             id: authUser.id,
             email: authUser.email!,
-            name: authUser.userMetadata?['name'] ?? authUser.email!.split('@')[0],
+            name:
+                authUser.userMetadata?['name'] ?? authUser.email!.split('@')[0],
           );
           return _currentUser;
         }
@@ -94,7 +98,10 @@ class SupabaseUserService extends ChangeNotifier {
   }) async {
     try {
       final userId = _supabase.auth.currentUser?.id;
-      if (userId == null) return false;
+      if (userId == null) {
+        debugPrint('❌ No hay usuario autenticado para actualizar');
+        return false;
+      }
 
       final Map<String, dynamic> updates = {};
       if (name != null) updates['name'] = name;
@@ -105,19 +112,28 @@ class SupabaseUserService extends ChangeNotifier {
       if (gender != null) updates['gender'] = gender;
       if (location != null) updates['location'] = location;
 
-      if (updates.isEmpty) return true;
+      if (updates.isEmpty) {
+        debugPrint('⚠️ No hay cambios para actualizar');
+        return true;
+      }
+
+      debugPrint('📝 Actualizando perfil con: $updates');
 
       await _supabase
           .from(SupabaseConfig.usersTable)
           .update(updates)
           .eq('id', userId);
 
-      // Recargar datos del usuario
+      debugPrint('✅ Perfil actualizado en Supabase');
+
+      // Recargar datos del usuario para reflejar cambios
       await getCurrentUser();
+
+      debugPrint('✅ Usuario recargado: ${_currentUser?.name}');
 
       return true;
     } catch (e) {
-      debugPrint('Error al actualizar perfil: $e');
+      debugPrint('❌ Error al actualizar perfil: $e');
       return false;
     }
   }
