@@ -404,7 +404,7 @@ class ProgramDetailScreen extends StatelessWidget {
 
   Widget _buildInfoChip(IconData icon, String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: ColorPalette.cardBackground,
         borderRadius: BorderRadius.circular(12),
@@ -412,12 +412,12 @@ class ProgramDetailScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(icon, color: ColorPalette.primary, size: 24),
-          const SizedBox(height: 8),
+          Icon(icon, color: ColorPalette.primary, size: 20),
+          const SizedBox(height: 6),
           Text(
             text,
             style: const TextStyle(
-              fontSize: 12,
+              fontSize: 11,
               color: ColorPalette.textSecondary,
             ),
             textAlign: TextAlign.center,

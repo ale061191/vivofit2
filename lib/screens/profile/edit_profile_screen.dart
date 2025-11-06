@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:vivofit/components/custom_button.dart';
-import 'package:vivofit/services/user_service.dart';
+import 'package:vivofit/services/supabase_user_service.dart';
+import 'package:vivofit/services/supabase_auth_service.dart';
 import 'package:vivofit/theme/app_theme.dart';
 import 'package:vivofit/theme/color_palette.dart';
 import 'package:vivofit/utils/validators.dart';
 
 /// Pantalla de Edición de Perfil
 /// Permite al usuario actualizar sus datos personales y foto de perfil
+/// Migrada a Supabase - Noviembre 2025
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
 
@@ -23,6 +25,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   File? _selectedImage;
   bool _isSaving = false;
+  bool _isLoading = true;
 
   late TextEditingController _nameController;
   late TextEditingController _ageController;
@@ -36,21 +39,46 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    final user = context.read<UserService>().user;
+    _nameController = TextEditingController();
+    _ageController = TextEditingController();
+    _heightController = TextEditingController();
+    _weightController = TextEditingController();
+    _phoneController = TextEditingController();
+    _locationController = TextEditingController();
+    _loadUserData();
+  }
 
-    _nameController = TextEditingController(text: user?.name ?? '');
-    _ageController = TextEditingController(
-      text: user?.age?.toString() ?? '',
-    );
-    _heightController = TextEditingController(
-      text: user?.height?.toStringAsFixed(0) ?? '',
-    );
-    _weightController = TextEditingController(
-      text: user?.weight?.toStringAsFixed(1) ?? '',
-    );
-    _phoneController = TextEditingController(text: user?.phone ?? '');
-    _locationController = TextEditingController(text: user?.location ?? '');
-    _selectedGender = user?.gender;
+  Future<void> _loadUserData() async {
+    try {
+      final authService = context.read<SupabaseAuthService>();
+      final userService = context.read<SupabaseUserService>();
+      final userId = authService.currentUser?.id;
+
+      if (userId == null) {
+        if (mounted) Navigator.pop(context);
+        return;
+      }
+
+      final user = await userService.getUserProfile(userId);
+
+      if (user != null && mounted) {
+        setState(() {
+          _nameController.text = user.name ?? '';
+          _ageController.text = user.age?.toString() ?? '';
+          _heightController.text = user.height?.toStringAsFixed(0) ?? '';
+          _weightController.text = user.weight?.toStringAsFixed(1) ?? '';
+          _phoneController.text = user.phone ?? '';
+          _locationController.text = user.location ?? '';
+          _selectedGender = user.gender;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error al cargar datos de usuario: $e');
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -138,13 +166,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() => _isSaving = true);
 
     try {
-      final userService = context.read<UserService>();
-      final currentUser = userService.user!;
+      final authService = context.read<SupabaseAuthService>();
+      final userService = context.read<SupabaseUserService>();
+      final userId = authService.currentUser?.id;
 
-      // En producción, aquí se subiría la imagen al servidor
-      // Por ahora solo guardamos los datos localmente
-      final updatedUser = currentUser.copyWith(
-        name: _nameController.text.trim(),
+      if (userId == null) {
+        throw Exception('Usuario no autenticado');
+      }
+
+      // Actualizar perfil en Supabase
+      final success = await userService.updateUserProfile(
+        userId: userId,
+        name: _nameController.text.trim().isEmpty
+            ? null
+            : _nameController.text.trim(),
         age: int.tryParse(_ageController.text.trim()),
         height: double.tryParse(_heightController.text.trim()),
         weight: double.tryParse(_weightController.text.trim()),
@@ -155,25 +190,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ? null
             : _locationController.text.trim(),
         gender: _selectedGender,
-        updatedAt: DateTime.now(),
       );
 
-      userService.setUser(updatedUser);
-
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Perfil actualizado exitosamente'),
-            backgroundColor: ColorPalette.success,
-          ),
-        );
-        Navigator.pop(context);
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('✅ Perfil actualizado exitosamente'),
+              backgroundColor: ColorPalette.success,
+            ),
+          );
+          Navigator.pop(context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('❌ Error al actualizar perfil'),
+              backgroundColor: ColorPalette.error,
+            ),
+          );
+        }
       }
     } catch (e) {
+      debugPrint('Error al guardar perfil: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al guardar: $e'),
+            content: Text('Error: $e'),
             backgroundColor: ColorPalette.error,
           ),
         );
@@ -187,13 +229,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<UserService>().user;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Editar Perfil'),
       ),
-      body: SingleChildScrollView(
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: ColorPalette.primary,
+              ),
+            )
+          : SingleChildScrollView(
         padding: const EdgeInsets.all(AppTheme.paddingLarge),
         child: Form(
           key: _formKey,
@@ -208,10 +254,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     backgroundColor: ColorPalette.cardBackgroundLight,
                     backgroundImage: _selectedImage != null
                         ? FileImage(_selectedImage!) as ImageProvider
-                        : user?.photoUrl != null
-                            ? NetworkImage(user!.photoUrl!) as ImageProvider
-                            : null,
-                    child: _selectedImage == null && user?.photoUrl == null
+                        : null,
+                    child: _selectedImage == null
                         ? const Icon(
                             Icons.person,
                             size: 60,

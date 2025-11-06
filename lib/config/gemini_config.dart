@@ -20,7 +20,8 @@ class GeminiConfig {
   }
 
   // Modelo a utilizar para análisis nutricional
-  static const String model = 'gemini-1.5-flash';
+  // Actualizado a gemini-pro para compatibilidad con API v1
+  static const String model = 'gemini-pro';
 
   // Configuración de seguridad
   static const int maxOutputTokens = 2048;

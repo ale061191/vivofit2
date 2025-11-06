@@ -118,19 +118,18 @@ class _ProgressCardState extends State<ProgressCard>
                 ),
                 const SizedBox(height: 16),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildStatItem(
                       icon: Icons.local_fire_department,
                       value: '${stats['currentStreak']}',
                       label: 'Racha (días)',
                     ),
-                    const SizedBox(width: 24),
                     _buildStatItem(
                       icon: Icons.fitness_center,
                       value: '${stats['totalWorkouts']}',
                       label: 'Entrenamientos',
                     ),
-                    const SizedBox(width: 24),
                     _buildStatItem(
                       icon: Icons.timer_outlined,
                       value: '${stats['totalMinutes']}',
@@ -159,7 +158,7 @@ class _ProgressCardState extends State<ProgressCard>
     required String value,
     required String label,
   }) {
-    return Expanded(
+    return Flexible(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -171,12 +170,15 @@ class _ProgressCardState extends State<ProgressCard>
                 size: 18,
               ),
               const SizedBox(width: 4),
-              Text(
-                value,
-                style: const TextStyle(
-                  color: ColorPalette.textPrimary,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+              Flexible(
+                child: Text(
+                  value,
+                  style: const TextStyle(
+                    color: ColorPalette.textPrimary,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -188,6 +190,8 @@ class _ProgressCardState extends State<ProgressCard>
               color: ColorPalette.textPrimary.withOpacity(0.9),
               fontSize: 11,
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
