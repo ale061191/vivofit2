@@ -50,16 +50,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _loadUserData() async {
     try {
-      final authService = context.read<SupabaseAuthService>();
       final userService = context.read<SupabaseUserService>();
-      final userId = authService.currentUser?.id;
-
-      if (userId == null) {
-        if (mounted) Navigator.pop(context);
-        return;
-      }
-
-      final user = await userService.getUserProfile(userId);
+      
+      // getCurrentUser() obtiene automáticamente el usuario autenticado actual
+      final user = await userService.getCurrentUser();
 
       if (user != null && mounted) {
         setState(() {
@@ -72,6 +66,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _selectedGender = user.gender;
           _isLoading = false;
         });
+      } else {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
       }
     } catch (e) {
       debugPrint('Error al cargar datos de usuario: $e');
@@ -166,17 +164,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() => _isSaving = true);
 
     try {
-      final authService = context.read<SupabaseAuthService>();
       final userService = context.read<SupabaseUserService>();
-      final userId = authService.currentUser?.id;
 
-      if (userId == null) {
-        throw Exception('Usuario no autenticado');
-      }
-
-      // Actualizar perfil en Supabase
-      final success = await userService.updateUserProfile(
-        userId: userId,
+      // updateProfile() usa internamente el ID del usuario autenticado actual
+      final success = await userService.updateProfile(
         name: _nameController.text.trim().isEmpty
             ? null
             : _nameController.text.trim(),
@@ -240,174 +231,175 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             )
           : SingleChildScrollView(
-        padding: const EdgeInsets.all(AppTheme.paddingLarge),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Foto de perfil
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundColor: ColorPalette.cardBackgroundLight,
-                    backgroundImage: _selectedImage != null
-                        ? FileImage(_selectedImage!) as ImageProvider
-                        : null,
-                    child: _selectedImage == null
-                        ? const Icon(
-                            Icons.person,
-                            size: 60,
-                            color: ColorPalette.textTertiary,
-                          )
-                        : null,
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: InkWell(
-                      onTap: _showImageSourceDialog,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(
-                          gradient: ColorPalette.primaryGradient,
-                          shape: BoxShape.circle,
+              padding: const EdgeInsets.all(AppTheme.paddingLarge),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Foto de perfil
+                    Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 60,
+                          backgroundColor: ColorPalette.cardBackgroundLight,
+                          backgroundImage: _selectedImage != null
+                              ? FileImage(_selectedImage!) as ImageProvider
+                              : null,
+                          child: _selectedImage == null
+                              ? const Icon(
+                                  Icons.person,
+                                  size: 60,
+                                  color: ColorPalette.textTertiary,
+                                )
+                              : null,
                         ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          size: 20,
-                          color: Colors.black,
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: InkWell(
+                            onTap: _showImageSourceDialog,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: const BoxDecoration(
+                                gradient: ColorPalette.primaryGradient,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                size: 20,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-
-              // Campo Nombre
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre completo',
-                  prefixIcon: Icon(Icons.person_outline),
-                ),
-                validator: (value) =>
-                    Validators.required(value, fieldName: 'El nombre'),
-              ),
-              const SizedBox(height: 16),
-
-              // Fila: Edad y Género
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _ageController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Edad',
-                        prefixIcon: Icon(Icons.cake_outlined),
-                        suffixText: 'años',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      initialValue: _selectedGender,
-                      decoration: const InputDecoration(
-                        labelText: 'Género',
-                        prefixIcon: Icon(Icons.person_pin_outlined),
-                      ),
-                      items: const [
-                        DropdownMenuItem(
-                            value: 'male', child: Text('Masculino')),
-                        DropdownMenuItem(
-                            value: 'female', child: Text('Femenino')),
-                        DropdownMenuItem(value: 'other', child: Text('Otro')),
                       ],
-                      onChanged: (value) {
-                        setState(() => _selectedGender = value);
-                      },
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
+                    const SizedBox(height: 32),
 
-              // Fila: Altura y Peso
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _heightController,
-                      keyboardType: TextInputType.number,
+                    // Campo Nombre
+                    TextFormField(
+                      controller: _nameController,
                       decoration: const InputDecoration(
-                        labelText: 'Altura',
-                        prefixIcon: Icon(Icons.height),
-                        suffixText: 'cm',
+                        labelText: 'Nombre completo',
+                        prefixIcon: Icon(Icons.person_outline),
+                      ),
+                      validator: (value) =>
+                          Validators.required(value, fieldName: 'El nombre'),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Fila: Edad y Género
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _ageController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Edad',
+                              prefixIcon: Icon(Icons.cake_outlined),
+                              suffixText: 'años',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
+                            initialValue: _selectedGender,
+                            decoration: const InputDecoration(
+                              labelText: 'Género',
+                              prefixIcon: Icon(Icons.person_pin_outlined),
+                            ),
+                            items: const [
+                              DropdownMenuItem(
+                                  value: 'male', child: Text('Masculino')),
+                              DropdownMenuItem(
+                                  value: 'female', child: Text('Femenino')),
+                              DropdownMenuItem(
+                                  value: 'other', child: Text('Otro')),
+                            ],
+                            onChanged: (value) {
+                              setState(() => _selectedGender = value);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Fila: Altura y Peso
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _heightController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Altura',
+                              prefixIcon: Icon(Icons.height),
+                              suffixText: 'cm',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _weightController,
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            decoration: const InputDecoration(
+                              labelText: 'Peso',
+                              prefixIcon: Icon(Icons.monitor_weight_outlined),
+                              suffixText: 'kg',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Campo Teléfono
+                    TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        labelText: 'Teléfono',
+                        prefixIcon: Icon(Icons.phone_outlined),
+                        hintText: '+58 412-1234567',
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _weightController,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
+                    const SizedBox(height: 16),
+
+                    // Campo Ubicación
+                    TextFormField(
+                      controller: _locationController,
                       decoration: const InputDecoration(
-                        labelText: 'Peso',
-                        prefixIcon: Icon(Icons.monitor_weight_outlined),
-                        suffixText: 'kg',
+                        labelText: 'Ubicación',
+                        prefixIcon: Icon(Icons.location_on_outlined),
+                        hintText: 'Ciudad, País',
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
+                    const SizedBox(height: 32),
 
-              // Campo Teléfono
-              TextFormField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'Teléfono',
-                  prefixIcon: Icon(Icons.phone_outlined),
-                  hintText: '+58 412-1234567',
+                    // Botón Guardar
+                    CustomButton(
+                      text: _isSaving ? 'Guardando...' : 'Guardar Cambios',
+                      onPressed: _isSaving ? null : _saveProfile,
+                      isLoading: _isSaving,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Botón Cancelar
+                    CustomButton(
+                      text: 'Cancelar',
+                      isOutlined: true,
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 16),
-
-              // Campo Ubicación
-              TextFormField(
-                controller: _locationController,
-                decoration: const InputDecoration(
-                  labelText: 'Ubicación',
-                  prefixIcon: Icon(Icons.location_on_outlined),
-                  hintText: 'Ciudad, País',
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              // Botón Guardar
-              CustomButton(
-                text: _isSaving ? 'Guardando...' : 'Guardar Cambios',
-                onPressed: _isSaving ? null : _saveProfile,
-                isLoading: _isSaving,
-              ),
-              const SizedBox(height: 16),
-
-              // Botón Cancelar
-              CustomButton(
-                text: 'Cancelar',
-                isOutlined: true,
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
