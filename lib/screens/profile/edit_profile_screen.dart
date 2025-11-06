@@ -51,7 +51,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _loadUserData() async {
     try {
       final userService = context.read<SupabaseUserService>();
-      
+
       // getCurrentUser() obtiene automáticamente el usuario autenticado actual
       final user = await userService.getCurrentUser();
 

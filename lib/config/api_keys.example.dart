@@ -7,6 +7,7 @@
 /// 3. El archivo api_keys.dart está protegido por .gitignore (no se subirá a GitHub)
 ///
 /// IMPORTANTE: NUNCA subas tus claves reales a GitHub o repositorios públicos
+library;
 
 class ApiKeys {
   // Google Gemini API Key

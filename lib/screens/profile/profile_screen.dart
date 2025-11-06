@@ -60,11 +60,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       // TODO: Cuando migres workout service, usa el de Supabase
       // Por ahora, usar valores por defecto
-      final totalCalories = 0;
+      const totalCalories = 0;
       final currentBMI = user.imc ?? 0;
 
       // Simular peso inicial basado en calorías quemadas
-      final weightEquivalentBurned = totalCalories / 7700;
+      const weightEquivalentBurned = totalCalories / 7700;
       final initialWeight = user.weight! + weightEquivalentBurned;
       final heightInMeters = user.height! / 100;
       final initialBMI = initialWeight / (heightInMeters * heightInMeters);
@@ -105,7 +105,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),
-            onPressed: () => context.push(AppRoutes.editProfile),
+            onPressed: () async {
+              // Navegar y esperar a que regrese
+              await context.push(AppRoutes.editProfile);
+              // Recargar datos cuando regresa de editar
+              if (mounted) {
+                await _loadUserAndBMI();
+              }
+            },
           ),
         ],
       ),
