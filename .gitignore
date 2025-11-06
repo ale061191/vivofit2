@@ -84,4 +84,4 @@ coverage/
 *.key
 *.pem
 secrets/
-lib/config/api_keys.dart
+# lib/config/api_keys.dart - COMENTADO: ahora usa String.fromEnvironment() con defaults seguros

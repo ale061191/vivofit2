@@ -78,7 +78,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
     // Calcular progreso de IMC
     BMIProgress? bmiProgress;
-    final user = await userService.getUserProfile(userId);
+    final user = await userService.getCurrentUser();
     if (user != null && user.height != null && user.weight != null) {
       final totalCalories = await workoutService.getTotalCaloriesBurned(userId);
       final currentBMI = user.imc ?? 0;
@@ -96,7 +96,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       ).copyWith(
         initialBMI: initialBMI,
         initialWeight: initialWeight,
-        totalCaloriesBurned: totalCalories,
+        totalCaloriesBurned: totalCalories.toInt(),
         lastUpdateDate: DateTime.now(),
       );
     }
