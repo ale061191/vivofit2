@@ -97,13 +97,20 @@ class SupabaseUserService extends ChangeNotifier {
     String? location,
   }) async {
     try {
-      final userId = _supabase.auth.currentUser?.id;
-      if (userId == null) {
+      final authUser = _supabase.auth.currentUser;
+      if (authUser == null) {
         debugPrint('❌ No hay usuario autenticado para actualizar');
         return false;
       }
 
-      final Map<String, dynamic> updates = {};
+      final userId = authUser.id;
+
+      // Preparar datos a actualizar
+      final Map<String, dynamic> updates = {
+        'id': userId, // Requerido para UPSERT
+        'email': authUser.email!, // Mantener email sincronizado
+      };
+
       if (name != null) updates['name'] = name;
       if (phone != null) updates['phone'] = phone;
       if (height != null) updates['height'] = height;
@@ -112,28 +119,25 @@ class SupabaseUserService extends ChangeNotifier {
       if (gender != null) updates['gender'] = gender;
       if (location != null) updates['location'] = location;
 
-      if (updates.isEmpty) {
-        debugPrint('⚠️ No hay cambios para actualizar');
-        return true;
-      }
-
       debugPrint('📝 Actualizando perfil con: $updates');
 
+      // Usar UPSERT: inserta si no existe, actualiza si existe
+      // onConflict: 'id' indica que si el ID ya existe, hace UPDATE
       await _supabase
           .from(SupabaseConfig.usersTable)
-          .update(updates)
-          .eq('id', userId);
+          .upsert(updates, onConflict: 'id');
 
-      debugPrint('✅ Perfil actualizado en Supabase');
+      debugPrint('✅ Perfil actualizado en Supabase con UPSERT');
 
       // Recargar datos del usuario para reflejar cambios
       await getCurrentUser();
 
-      debugPrint('✅ Usuario recargado: ${_currentUser?.name}');
+      debugPrint('✅ Usuario recargado: ${_currentUser?.name}, edad: ${_currentUser?.age}, altura: ${_currentUser?.height}, peso: ${_currentUser?.weight}');
 
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
       debugPrint('❌ Error al actualizar perfil: $e');
+      debugPrint('Stack trace: $stackTrace');
       return false;
     }
   }

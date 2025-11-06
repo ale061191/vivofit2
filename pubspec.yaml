@@ -40,8 +40,8 @@ dependencies:
   # HTTP & API
   http: ^1.2.0
   
-  # AI & Machine Learning
-  google_generative_ai: ^0.2.2
+  # AI & Machine Learning - Actualizado para soportar gemini-1.5-flash
+  google_generative_ai: ^0.4.6
   
   # Permissions
   permission_handler: ^11.3.0

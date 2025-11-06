@@ -20,10 +20,10 @@ class GeminiConfig {
   }
 
   // Modelo a utilizar para análisis nutricional
-  // gemini-1.5-flash-latest es el modelo estable actual para visión
-  // Soporta multimodal (texto + imagen) y es el más eficiente
-  // Referencia: https://ai.google.dev/gemini-api/docs/models/gemini#gemini-1.5-flash
-  static const String model = 'gemini-1.5-flash-latest';
+  // gemini-1.5-flash: modelo eficiente con soporte multimodal (texto + imagen)
+  // Requiere google_generative_ai ^0.4.0+
+  // Referencia: https://ai.google.dev/gemini-api/docs/models/gemini
+  static const String model = 'gemini-1.5-flash';
 
   // Configuración de seguridad
   static const int maxOutputTokens = 2048;
