@@ -20,22 +20,61 @@ class SupabaseUserService extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      final userId = _supabase.auth.currentUser?.id;
-      if (userId == null) {
+      final authUser = _supabase.auth.currentUser;
+      if (authUser == null) {
+        debugPrint('❌ No hay usuario autenticado');
         _currentUser = null;
         return null;
       }
 
+      debugPrint('✅ Usuario autenticado: ${authUser.id}');
+
       final response = await _supabase
           .from(SupabaseConfig.usersTable)
           .select()
-          .eq('id', userId)
-          .single();
+          .eq('id', authUser.id)
+          .maybeSingle(); // Usar maybeSingle en lugar de single
 
-      _currentUser = _userFromSupabase(response);
+      if (response == null) {
+        debugPrint('⚠️ Usuario no encontrado en tabla users, creando...');
+        // Si no existe el registro, crearlo
+        await _supabase.from(SupabaseConfig.usersTable).insert({
+          'id': authUser.id,
+          'email': authUser.email!,
+          'name': authUser.userMetadata?['name'] ?? authUser.email!.split('@')[0],
+          'created_at': DateTime.now().toIso8601String(),
+        });
+        
+        // Volver a consultar
+        final newResponse = await _supabase
+            .from(SupabaseConfig.usersTable)
+            .select()
+            .eq('id', authUser.id)
+            .single();
+        
+        _currentUser = _userFromSupabase(newResponse);
+      } else {
+        _currentUser = _userFromSupabase(response);
+      }
+
+      debugPrint('✅ Usuario cargado: ${_currentUser?.name} (${_currentUser?.email})');
       return _currentUser;
     } catch (e) {
-      debugPrint('Error al obtener usuario: $e');
+      debugPrint('❌ Error al obtener usuario: $e');
+      // Intentar crear usuario básico con datos de auth
+      try {
+        final authUser = _supabase.auth.currentUser;
+        if (authUser != null) {
+          _currentUser = app_user.User(
+            id: authUser.id,
+            email: authUser.email!,
+            name: authUser.userMetadata?['name'] ?? authUser.email!.split('@')[0],
+          );
+          return _currentUser;
+        }
+      } catch (fallbackError) {
+        debugPrint('❌ Error en fallback: $fallbackError');
+      }
       return null;
     } finally {
       _isLoading = false;

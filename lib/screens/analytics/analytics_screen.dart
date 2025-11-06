@@ -380,7 +380,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   horizontalInterval: 1,
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: ColorPalette.textSecondary.withValues(alpha: 0.1 * 255),
+                      color: ColorPalette.textSecondary
+                          .withValues(alpha: 0.1 * 255),
                       strokeWidth: 1,
                     );
                   },
@@ -554,8 +555,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                       borderRadius: BorderRadius.circular(4),
                       child: LinearProgressIndicator(
                         value: entry.value / total,
-                        backgroundColor:
-                            ColorPalette.textSecondary.withValues(alpha: 0.2 * 255),
+                        backgroundColor: ColorPalette.textSecondary
+                            .withValues(alpha: 0.2 * 255),
                         valueColor: const AlwaysStoppedAnimation<Color>(
                           ColorPalette.primary,
                         ),

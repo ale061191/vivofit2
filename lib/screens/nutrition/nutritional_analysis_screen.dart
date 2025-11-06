@@ -252,7 +252,8 @@ class NutritionalAnalysisScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: ColorPalette.cardBackground,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: levelColor.withValues(alpha: 0.3 * 255), width: 2),
+        border: Border.all(
+            color: levelColor.withValues(alpha: 0.3 * 255), width: 2),
       ),
       child: Row(
         children: [
@@ -307,7 +308,8 @@ class NutritionalAnalysisScreen extends StatelessWidget {
                         nutriente,
                         style: const TextStyle(fontSize: 12),
                       ),
-                      backgroundColor: ColorPalette.primary.withValues(alpha: 0.2 * 255),
+                      backgroundColor:
+                          ColorPalette.primary.withValues(alpha: 0.2 * 255),
                       labelStyle: const TextStyle(color: ColorPalette.primary),
                     ))
                 .toList(),
@@ -444,7 +446,8 @@ class NutritionalAnalysisScreen extends StatelessWidget {
                         categoria,
                         style: const TextStyle(fontSize: 12),
                       ),
-                      backgroundColor: Colors.green.withValues(alpha: 0.2 * 255),
+                      backgroundColor:
+                          Colors.green.withValues(alpha: 0.2 * 255),
                       labelStyle: const TextStyle(color: Colors.green),
                     ))
                 .toList(),

@@ -111,7 +111,8 @@ class _ProgressCardState extends State<ProgressCard>
                     ),
                     Icon(
                       Icons.arrow_forward_ios,
-                      color: ColorPalette.textPrimary.withValues(alpha: 0.7 * 255),
+                      color:
+                          ColorPalette.textPrimary.withValues(alpha: 0.7 * 255),
                       size: 18,
                     ),
                   ],
@@ -141,7 +142,8 @@ class _ProgressCardState extends State<ProgressCard>
                 Text(
                   'Toca para ver estadísticas detalladas',
                   style: TextStyle(
-                    color: ColorPalette.textPrimary.withValues(alpha: 0.8 * 255),
+                    color:
+                        ColorPalette.textPrimary.withValues(alpha: 0.8 * 255),
                     fontSize: 12,
                   ),
                 ),
