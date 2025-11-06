@@ -42,13 +42,18 @@ class GeminiService {
     try {
       debugPrint('📸 Analizando imagen: ${imageFile.path}');
 
-      // Leer la imagen como bytes
+      // Leer la imagen como bytes (Uint8List)
       final imageBytes = await imageFile.readAsBytes();
 
-      // Crear el contenido con la imagen y el prompt
-      final prompt = TextPart(GeminiConfig.nutritionalAnalysisPrompt);
-      final imagePart = DataPart('image/jpeg', imageBytes);
+      // Inferir el mimeType basado en la extensión del archivo
+      final mimeType = _getMimeType(imageFile.path);
+      debugPrint('🖼️ Tipo de archivo detectado: $mimeType');
 
+      // Crear las partes del contenido multimodal
+      final prompt = TextPart(GeminiConfig.nutritionalAnalysisPrompt);
+      final imagePart = DataPart(mimeType, imageBytes);
+
+      // Construir contenido multimodal
       final content = [
         Content.multi([prompt, imagePart])
       ];
@@ -74,6 +79,28 @@ class GeminiService {
       debugPrint('❌ Error en análisis nutricional: $e');
       debugPrint('Stack trace: $stackTrace');
       rethrow;
+    }
+  }
+
+  /// Inferir mimeType basado en la extensión del archivo
+  String _getMimeType(String path) {
+    final extension = path.split('.').last.toLowerCase();
+    switch (extension) {
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'png':
+        return 'image/png';
+      case 'webp':
+        return 'image/webp';
+      case 'gif':
+        return 'image/gif';
+      case 'heic':
+      case 'heif':
+        return 'image/heic';
+      default:
+        debugPrint('⚠️ Extensión no reconocida: $extension, usando image/jpeg por defecto');
+        return 'image/jpeg'; // Default seguro
     }
   }
 
