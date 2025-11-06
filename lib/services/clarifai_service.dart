@@ -11,10 +11,10 @@ import '../models/nutritional_analysis.dart';
 class ClarifaiService {
   // 🔑 CREDENCIALES DE CLARIFAI
   // Obtén tu API Key en: https://clarifai.com/settings/security
-  static const String _apiKey = 'TU_CLARIFAI_API_KEY_AQUI';
+  static const String _apiKey = 'a6b67fd4bc3e435db1d6b9e278069d1f';
   static const String _userId = 'clarifai'; // Usuario por defecto
   static const String _appId = 'main'; // App por defecto
-  
+
   // Modelo especializado en reconocimiento de comida
   static const String _foodModelId = 'food-item-recognition';
   static const String _baseUrl = 'https://api.clarifai.com/v2';
@@ -92,20 +92,18 @@ class ClarifaiService {
         throw Exception('No se detectaron alimentos en la imagen');
       }
 
-      final concepts = (outputs[0]['data']['concepts'] as List)
-          .cast<Map<String, dynamic>>();
+      final concepts =
+          (outputs[0]['data']['concepts'] as List).cast<Map<String, dynamic>>();
 
       // Tomar los 3 alimentos con mayor confianza
       final topFoods = concepts.take(3).toList();
-      final foodNames = topFoods
-          .map((c) => c['name'] as String)
-          .join(', ');
+      final foodNames = topFoods.map((c) => c['name'] as String).join(', ');
 
       debugPrint('🍽️ Alimentos detectados: $foodNames');
 
       // Obtener datos nutricionales estimados
       final analysis = _estimateNutrition(topFoods);
-      
+
       return analysis.copyWith(
         nombre: foodNames.isEmpty ? 'Alimento no identificado' : foodNames,
         imagePath: imagePath,
@@ -151,9 +149,8 @@ class ClarifaiService {
             beneficios.addAll((nutrition['benefits'] as List).cast<String>());
           }
           if (nutrition['micronutrients'] != null) {
-            micronutrientes.addAll(
-              (nutrition['micronutrients'] as List).cast<String>()
-            );
+            micronutrientes
+                .addAll((nutrition['micronutrients'] as List).cast<String>());
           }
           break;
         }

@@ -17,11 +17,11 @@ class EdamamService {
       'https://api.edamam.com/api/nutrition-details';
 
   /// Analiza una imagen de comida y retorna información nutricional
-  /// 
+  ///
   /// NOTA: Edamam no acepta imágenes directamente.
   /// Esta implementación usa OCR/visión para extraer texto de la imagen
   /// y luego busca en la base de datos de Edamam.
-  /// 
+  ///
   /// Para análisis visual real, considera usar Clarifai (implementado abajo)
   Future<NutritionalAnalysis?> analyzeFood(File imageFile) async {
     try {
@@ -50,11 +50,15 @@ class EdamamService {
   Future<NutritionalAnalysis?> _analyzeByText(String foodDescription) async {
     try {
       final response = await http.post(
-        Uri.parse('$_nutritionAnalysisEndpoint?app_id=$_appId&app_key=$_appKey'),
+        Uri.parse(
+            '$_nutritionAnalysisEndpoint?app_id=$_appId&app_key=$_appKey'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'title': 'Análisis Nutricional',
-          'ingr': foodDescription.split('\n').where((s) => s.trim().isNotEmpty).toList(),
+          'ingr': foodDescription
+              .split('\n')
+              .where((s) => s.trim().isNotEmpty)
+              .toList(),
         }),
       );
 
@@ -85,7 +89,8 @@ class EdamamService {
 
     // Micronutrientes destacados
     final micronutrients = <String>[];
-    if (_getQuantity(nutrients, 'VITA_RAE') > 0) micronutrients.add('Vitamina A');
+    if (_getQuantity(nutrients, 'VITA_RAE') > 0)
+      micronutrients.add('Vitamina A');
     if (_getQuantity(nutrients, 'VITC') > 0) micronutrients.add('Vitamina C');
     if (_getQuantity(nutrients, 'CA') > 0) micronutrients.add('Calcio');
     if (_getQuantity(nutrients, 'FE') > 0) micronutrients.add('Hierro');
@@ -110,11 +115,12 @@ class EdamamService {
       beneficios: beneficios,
       recomendaciones: _generateRecommendations(calories, protein, carbs, fat),
       nivelSaludable: nivelSaludable,
-      aptoPara: healthLabels.where((l) => 
-        l.contains('Vegan') || 
-        l.contains('Vegetarian') || 
-        l.contains('Gluten-Free')
-      ).toList(),
+      aptoPara: healthLabels
+          .where((l) =>
+              l.contains('Vegan') ||
+              l.contains('Vegetarian') ||
+              l.contains('Gluten-Free'))
+          .toList(),
       fechaAnalisis: DateTime.now(),
       imagePath: '', // Se agregará después
     );
@@ -135,9 +141,8 @@ class EdamamService {
       'High-Protein'
     ];
 
-    final matchCount = labels.where((l) => 
-      positiveLabels.any((p) => l.contains(p))
-    ).length;
+    final matchCount =
+        labels.where((l) => positiveLabels.any((p) => l.contains(p))).length;
 
     if (matchCount >= 3) return NivelSaludable.alto;
     if (matchCount >= 1) return NivelSaludable.medio;
@@ -160,9 +165,7 @@ class EdamamService {
       benefits.add('Bajo en grasas, control de peso');
     }
 
-    return benefits.isEmpty 
-      ? ['Alimento completo y nutritivo'] 
-      : benefits;
+    return benefits.isEmpty ? ['Alimento completo y nutritivo'] : benefits;
   }
 
   String _generateRecommendations(
@@ -190,11 +193,12 @@ class EdamamService {
     }
 
     if (fat > 20) {
-      buffer.write('Contenido de grasa moderado-alto, equilibra con vegetales. ');
+      buffer
+          .write('Contenido de grasa moderado-alto, equilibra con vegetales. ');
     }
 
-    return buffer.isEmpty 
-      ? 'Alimento balanceado, disfrútalo como parte de una dieta variada.'
-      : buffer.toString().trim();
+    return buffer.isEmpty
+        ? 'Alimento balanceado, disfrútalo como parte de una dieta variada.'
+        : buffer.toString().trim();
   }
 }
