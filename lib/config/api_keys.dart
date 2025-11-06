@@ -8,26 +8,19 @@
 library;
 
 class ApiKeys {
-  // Google Gemini API Key
-  // ⚠️ PLACEHOLDER para GitHub Actions - Configura tus claves reales localmente
-  static const String geminiApiKey = String.fromEnvironment(
-    'GEMINI_API_KEY',
-    defaultValue: 'AIzaSyDRrCJTvBAT59ytRWg3vreuuJplWu7YgTc', // Tu clave real para desarrollo local
-  );
+  // Google Gemini API Key (Regenerada: 5 Nov 2025)
+  // Obtén tu clave en: https://makersuite.google.com/app/apikey
+  static const String geminiApiKey = 'AIzaSyDRrCJTvBAT59ytRWg3vreuuJplWu7YgTc';
 
   // Supabase Configuration
-  static const String supabaseUrl = String.fromEnvironment(
-    'SUPABASE_URL',
-    defaultValue: 'https://awtvethqcigauaxyzqhz.supabase.co', // Tu URL real para desarrollo local
-  );
-  
-  static const String supabaseAnonKey = String.fromEnvironment(
-    'SUPABASE_ANON_KEY',
-    defaultValue: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3dHZldGhxY2lnYXVheHl6cWh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyOTEwNzYsImV4cCI6MjA3Nzg2NzA3Nn0.6bTl_DGdWMmfNIpfQRzSZ7OPbBrjk2n52MatjPlgEDA', // Tu key real para desarrollo local
-  );
+  // URL del proyecto: https://supabase.com/dashboard/project/awtvethqcigauaxyzqhz
+  static const String supabaseUrl = 'https://awtvethqcigauaxyzqhz.supabase.co';
+  static const String supabaseAnonKey =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3dHZldGhxY2lnYXVheHl6cWh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyOTEwNzYsImV4cCI6MjA3Nzg2NzA3Nn0.6bTl_DGdWMmfNIpfQRzSZ7OPbBrjk2n52MatjPlgEDA';
 
-  // Validación
+  // Validación (no modificar)
   static bool get isConfigured =>
+      geminiApiKey != 'TU_CLAVE_AQUI' &&
       geminiApiKey.isNotEmpty &&
       supabaseUrl.isNotEmpty;
 }
