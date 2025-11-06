@@ -27,7 +27,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       description:
           'Tu compañero fitness personalizado para alcanzar tus metas. Entrena, nutre y transforma tu vida.',
       imageUrl: 'assets/images/onboarding/image1.png',
-      showLogo: true, // Mostrar logo en primera pantalla
+      showLogo: false, // Logo removido por solicitud del usuario
     ),
     OnboardingItem(
       title: 'ENTRENA CON PROPÓSITO',
