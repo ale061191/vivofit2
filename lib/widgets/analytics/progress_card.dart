@@ -63,7 +63,7 @@ class _ProgressCardState extends State<ProgressCard>
         gradient: LinearGradient(
           colors: [
             ColorPalette.primary,
-            ColorPalette.primary.withOpacity(0.7),
+            ColorPalette.primary.withValues(alpha: 0.7 * 255),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -71,7 +71,7 @@ class _ProgressCardState extends State<ProgressCard>
         borderRadius: BorderRadius.circular(12.0),
         boxShadow: [
           BoxShadow(
-            color: ColorPalette.primary.withOpacity(0.3),
+            color: ColorPalette.primary.withValues(alpha: 0.3 * 255),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -111,7 +111,7 @@ class _ProgressCardState extends State<ProgressCard>
                     ),
                     Icon(
                       Icons.arrow_forward_ios,
-                      color: ColorPalette.textPrimary.withOpacity(0.7),
+                      color: ColorPalette.textPrimary.withValues(alpha: 0.7 * 255),
                       size: 18,
                     ),
                   ],
@@ -141,7 +141,7 @@ class _ProgressCardState extends State<ProgressCard>
                 Text(
                   'Toca para ver estadísticas detalladas',
                   style: TextStyle(
-                    color: ColorPalette.textPrimary.withOpacity(0.8),
+                    color: ColorPalette.textPrimary.withValues(alpha: 0.8 * 255),
                     fontSize: 12,
                   ),
                 ),
@@ -187,7 +187,7 @@ class _ProgressCardState extends State<ProgressCard>
           Text(
             label,
             style: TextStyle(
-              color: ColorPalette.textPrimary.withOpacity(0.9),
+              color: ColorPalette.textPrimary.withValues(alpha: 0.9 * 255),
               fontSize: 11,
             ),
             maxLines: 2,

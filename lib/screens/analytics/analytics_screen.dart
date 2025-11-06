@@ -380,7 +380,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   horizontalInterval: 1,
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: ColorPalette.textSecondary.withOpacity(0.1),
+                      color: ColorPalette.textSecondary.withValues(alpha: 0.1 * 255),
                       strokeWidth: 1,
                     );
                   },
@@ -467,7 +467,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     ),
                     belowBarData: BarAreaData(
                       show: true,
-                      color: ColorPalette.primary.withOpacity(0.1),
+                      color: ColorPalette.primary.withValues(alpha: 0.1 * 255),
                     ),
                   ),
                 ],
@@ -555,7 +555,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                       child: LinearProgressIndicator(
                         value: entry.value / total,
                         backgroundColor:
-                            ColorPalette.textSecondary.withOpacity(0.2),
+                            ColorPalette.textSecondary.withValues(alpha: 0.2 * 255),
                         valueColor: const AlwaysStoppedAnimation<Color>(
                           ColorPalette.primary,
                         ),
@@ -585,7 +585,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             Icon(
               Icons.insert_chart_outlined,
               size: 64,
-              color: ColorPalette.textSecondary.withOpacity(0.5),
+              color: ColorPalette.textSecondary.withValues(alpha: 0.5 * 255),
             ),
             const SizedBox(height: 16),
             Text(

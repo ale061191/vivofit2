@@ -207,8 +207,8 @@ class BMIProgressChart extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: bmiProgress.isHealthyWeight
-                    ? Colors.green.withOpacity(0.1)
-                    : ColorPalette.primary.withOpacity(0.1),
+                    ? Colors.green.withValues(alpha: 0.1 * 255)
+                    : ColorPalette.primary.withValues(alpha: 0.1 * 255),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
