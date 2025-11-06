@@ -7,7 +7,7 @@ import 'package:vivofit/models/food.dart';
 import 'package:vivofit/navigation/app_routes.dart';
 import 'package:vivofit/theme/app_theme.dart';
 import 'package:vivofit/theme/color_palette.dart';
-import 'package:vivofit/services/gemini_service.dart';
+import 'package:vivofit/services/clarifai_service.dart';
 import 'nutritional_analysis_screen.dart';
 
 /// Pantalla de Nutrición
@@ -25,7 +25,7 @@ class _NutritionScreenState extends State<NutritionScreen> {
   String _selectedCategory = 'all';
   final TextEditingController _searchController = TextEditingController();
   final ImagePicker _imagePicker = ImagePicker();
-  final GeminiService _geminiService = GeminiService();
+  final ClarifaiService _clarifaiService = ClarifaiService();
 
   @override
   void initState() {
@@ -118,9 +118,9 @@ class _NutritionScreenState extends State<NutritionScreen> {
         );
       }
 
-      // Analizar con Gemini
+      // Analizar con Clarifai (reconocimiento visual de alimentos)
       final imageFile = File(image.path);
-      final analysis = await _geminiService.analyzeFood(imageFile);
+      final analysis = await _clarifaiService.analyzeFood(imageFile);
 
       // Cerrar loading
       if (mounted) {

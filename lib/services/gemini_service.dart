@@ -99,7 +99,8 @@ class GeminiService {
       case 'heif':
         return 'image/heic';
       default:
-        debugPrint('⚠️ Extensión no reconocida: $extension, usando image/jpeg por defecto');
+        debugPrint(
+            '⚠️ Extensión no reconocida: $extension, usando image/jpeg por defecto');
         return 'image/jpeg'; // Default seguro
     }
   }

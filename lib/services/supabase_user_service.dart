@@ -132,7 +132,8 @@ class SupabaseUserService extends ChangeNotifier {
       // Recargar datos del usuario para reflejar cambios
       await getCurrentUser();
 
-      debugPrint('✅ Usuario recargado: ${_currentUser?.name}, edad: ${_currentUser?.age}, altura: ${_currentUser?.height}, peso: ${_currentUser?.weight}');
+      debugPrint(
+          '✅ Usuario recargado: ${_currentUser?.name}, edad: ${_currentUser?.age}, altura: ${_currentUser?.height}, peso: ${_currentUser?.weight}');
 
       return true;
     } catch (e, stackTrace) {
