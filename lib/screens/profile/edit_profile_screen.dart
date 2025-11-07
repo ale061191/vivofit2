@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:vivofit/components/custom_button.dart';
 import 'package:vivofit/services/supabase_user_service.dart';
-import 'package:vivofit/services/supabase_auth_service.dart';
 import 'package:vivofit/theme/app_theme.dart';
 import 'package:vivofit/theme/color_palette.dart';
 import 'package:vivofit/utils/validators.dart';
@@ -55,14 +54,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       // getCurrentUser() obtiene automáticamente el usuario autenticado actual
       final user = await userService.getCurrentUser();
 
+      debugPrint('👤 Usuario cargado: ${user?.name}, edad: ${user?.age}, altura: ${user?.height}, peso: ${user?.weight}');
+
       if (user != null && mounted) {
         setState(() {
-          _nameController.text = user.name ?? '';
+          // Asegurar que nunca se muestren valores 'N/A' - dejar vacío si es null
+          _nameController.text = (user.name?.isNotEmpty ?? false) 
+              ? user.name! 
+              : '';
           _ageController.text = user.age?.toString() ?? '';
           _heightController.text = user.height?.toStringAsFixed(0) ?? '';
           _weightController.text = user.weight?.toStringAsFixed(1) ?? '';
-          _phoneController.text = user.phone ?? '';
-          _locationController.text = user.location ?? '';
+          _phoneController.text = (user.phone?.isNotEmpty ?? false)
+              ? user.phone!
+              : '';
+          _locationController.text = (user.location?.isNotEmpty ?? false)
+              ? user.location!
+              : '';
           _selectedGender = user.gender;
           _isLoading = false;
         });
@@ -72,9 +80,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         }
       }
     } catch (e) {
-      debugPrint('Error al cargar datos de usuario: $e');
+      debugPrint('❌ Error al cargar datos de usuario: $e');
       if (mounted) {
         setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al cargar datos: $e'),
+            backgroundColor: ColorPalette.error,
+          ),
+        );
       }
     }
   }

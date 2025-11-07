@@ -126,31 +126,52 @@ class SupabaseUserService extends ChangeNotifier {
 
       final userId = authUser.id;
 
-      // Preparar datos a actualizar
-      final Map<String, dynamic> updates = {
-        'id': userId, // Requerido para UPSERT
-        'email': authUser.email!, // Mantener email sincronizado
-      };
+      debugPrint('🔍 Verificando existencia de usuario: $userId');
 
-      if (name != null) updates['name'] = name;
-      if (phone != null) updates['phone'] = phone;
-      if (height != null) updates['height'] = height;
-      if (weight != null) updates['weight'] = weight;
-      if (age != null) updates['age'] = age;
-      if (gender != null) updates['gender'] = gender;
-      if (location != null) updates['location'] = location;
-
-      debugPrint('📝 Actualizando perfil con: $updates');
-
-      // Usar UPSERT: inserta si no existe, actualiza si existe
-      // onConflict: 'id' indica que si el ID ya existe, hace UPDATE
-      await _supabase
+      // 1. Verificar si el usuario ya existe en la tabla
+      final existingUser = await _supabase
           .from(SupabaseConfig.usersTable)
-          .upsert(updates, onConflict: 'id');
+          .select('id')
+          .eq('id', userId)
+          .maybeSingle();
 
-      debugPrint('✅ Perfil actualizado en Supabase con UPSERT');
+      // 2. Preparar datos comunes
+      final Map<String, dynamic> data = {};
+      if (name != null) data['name'] = name;
+      if (phone != null) data['phone'] = phone;
+      if (height != null) data['height'] = height;
+      if (weight != null) data['weight'] = weight;
+      if (age != null) data['age'] = age;
+      if (gender != null) data['gender'] = gender;
+      if (location != null) data['location'] = location;
 
-      // Recargar datos del usuario para reflejar cambios
+      debugPrint('📝 Datos a guardar: $data');
+
+      // 3. Ejecutar INSERT o UPDATE según corresponda
+      if (existingUser == null) {
+        // Usuario NO existe → INSERT
+        debugPrint('➕ Usuario no existe, insertando...');
+        data['id'] = userId;
+        data['email'] = authUser.email!;
+        data['created_at'] = DateTime.now().toIso8601String();
+
+        await _supabase.from(SupabaseConfig.usersTable).insert(data);
+
+        debugPrint('✅ Perfil insertado exitosamente');
+      } else {
+        // Usuario SÍ existe → UPDATE
+        debugPrint('✏️ Usuario existe, actualizando...');
+        data['updated_at'] = DateTime.now().toIso8601String();
+
+        await _supabase
+            .from(SupabaseConfig.usersTable)
+            .update(data)
+            .eq('id', userId);
+
+        debugPrint('✅ Perfil actualizado exitosamente');
+      }
+
+      // 4. Recargar datos del usuario para reflejar cambios
       await getCurrentUser();
 
       debugPrint(
@@ -159,7 +180,7 @@ class SupabaseUserService extends ChangeNotifier {
       return true;
     } catch (e, stackTrace) {
       debugPrint('❌ Error al actualizar perfil: $e');
-      debugPrint('Stack trace: $stackTrace');
+      debugPrint('📍 Stack trace: $stackTrace');
       return false;
     }
   }

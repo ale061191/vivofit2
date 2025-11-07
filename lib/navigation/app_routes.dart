@@ -40,22 +40,24 @@ class AppRoutes {
       // Verificar si el usuario ya tiene sesión activa
       final user = Supabase.instance.client.auth.currentUser;
       final isAuthenticated = user != null;
-      
-      final isOnAuthScreen = state.matchedLocation == login || 
-                           state.matchedLocation == register ||
-                           state.matchedLocation == forgotPassword ||
-                           state.matchedLocation == onboarding;
-      
+
+      final isOnAuthScreen = state.matchedLocation == login ||
+          state.matchedLocation == register ||
+          state.matchedLocation == forgotPassword ||
+          state.matchedLocation == onboarding;
+
       // Si está autenticado y está en pantalla de auth, redirigir a home
       if (isAuthenticated && isOnAuthScreen) {
         return main;
       }
-      
+
       // Si no está autenticado y no está en pantalla de auth, redirigir a onboarding
-      if (!isAuthenticated && !isOnAuthScreen && state.matchedLocation != onboarding) {
+      if (!isAuthenticated &&
+          !isOnAuthScreen &&
+          state.matchedLocation != onboarding) {
         return onboarding;
       }
-      
+
       // No hay redirección necesaria
       return null;
     },

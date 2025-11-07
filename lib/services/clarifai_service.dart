@@ -240,15 +240,18 @@ class ClarifaiService {
     int score = 0;
 
     // Criterios saludables
-    if (calories < 400) score += 2;
+    if (calories < 400)
+      score += 2;
     else if (calories < 600) score++;
-    
-    if (protein > 20) score += 2;
+
+    if (protein > 20)
+      score += 2;
     else if (protein > 12) score++;
-    
-    if (fat < 10) score += 2;
+
+    if (fat < 10)
+      score += 2;
     else if (fat < 20) score++;
-    
+
     // Penalizaciones
     if (fat > 30) score -= 2; // Alto en grasas
     if (calories > 700) score -= 2; // Muy alto en calorías
