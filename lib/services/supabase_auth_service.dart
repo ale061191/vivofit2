@@ -56,7 +56,7 @@ class SupabaseAuthService extends ChangeNotifier {
       // Esto asegura que el usuario siempre tenga un perfil completo
       try {
         debugPrint('➕ Creando perfil en tabla users...');
-        
+
         await _supabase.from(SupabaseConfig.usersTable).insert({
           'id': userId,
           'email': email,
@@ -70,26 +70,25 @@ class SupabaseAuthService extends ChangeNotifier {
         debugPrint('❌ Error al crear perfil en tabla users: $insertError');
         debugPrint('⚠️ El usuario existe en Auth pero no en tabla users');
         debugPrint('⚠️ Esto causará problemas al editar perfil');
-        
+
         // CRÍTICO: Si falla aquí, intentar eliminar el usuario de Auth
         // para evitar inconsistencia entre Auth y tabla users
         try {
           debugPrint('🔄 Intentando rollback de Auth...');
           await _supabase.auth.signOut();
           throw Exception(
-            'Error al crear perfil. Por favor verifica las políticas RLS de Supabase e intenta nuevamente.'
-          );
+              'Error al crear perfil. Por favor verifica las políticas RLS de Supabase e intenta nuevamente.');
         } catch (rollbackError) {
           debugPrint('❌ Error en rollback: $rollbackError');
           throw Exception(
-            'Error crítico al crear perfil. Contacta al administrador.'
-          );
+              'Error crítico al crear perfil. Contacta al administrador.');
         }
       }
 
       // Si la confirmación de email está deshabilitada, el usuario ya está autenticado
       // Si está habilitada, necesitará confirmar su email primero
-      debugPrint('📧 Email confirmado: ${response.user!.emailConfirmedAt != null}');
+      debugPrint(
+          '📧 Email confirmado: ${response.user!.emailConfirmedAt != null}');
 
       notifyListeners();
       return userId;

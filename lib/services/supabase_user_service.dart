@@ -151,12 +151,14 @@ class SupabaseUserService extends ChangeNotifier {
       if (existingUser == null) {
         // Usuario NO existe en tabla users (ERROR CRÍTICO de registro)
         // Esto NO DEBERÍA pasar si el registro funciona correctamente
-        debugPrint('⚠️⚠️⚠️ ALERTA: Usuario existe en Auth pero NO en tabla users');
+        debugPrint(
+            '⚠️⚠️⚠️ ALERTA: Usuario existe en Auth pero NO en tabla users');
         debugPrint('🔧 Creando registro faltante...');
-        
+
         data['id'] = userId;
         data['email'] = authUser.email!;
-        data['name'] = authUser.userMetadata?['name'] ?? authUser.email!.split('@')[0];
+        data['name'] =
+            authUser.userMetadata?['name'] ?? authUser.email!.split('@')[0];
         data['created_at'] = DateTime.now().toIso8601String();
 
         await _supabase.from(SupabaseConfig.usersTable).insert(data);
@@ -166,7 +168,7 @@ class SupabaseUserService extends ChangeNotifier {
         // Usuario SÍ existe → UPDATE (flujo normal)
         debugPrint('✏️ Usuario existe en tabla users, actualizando...');
         debugPrint('📋 Datos actuales: $existingUser');
-        
+
         data['updated_at'] = DateTime.now().toIso8601String();
 
         await _supabase
