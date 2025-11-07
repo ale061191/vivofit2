@@ -130,32 +130,66 @@ class ClarifaiService {
     final micronutrientes = <String>[];
 
     for (final food in foods) {
-      final foodName = (food['name'] as String).toLowerCase();
+      final foodName = (food['name'] as String).toLowerCase().trim();
       final confidence = (food['value'] as num).toDouble();
 
-      // Buscar en base de datos (match aproximado)
-      for (final entry in nutritionDb.entries) {
-        if (foodName.contains(entry.key) || entry.key.contains(foodName)) {
-          final nutrition = entry.value;
-          // Ponderar por confianza
-          totalCalories += nutrition['calories']! * confidence;
-          totalProtein += nutrition['protein']! * confidence;
-          totalCarbs += nutrition['carbs']! * confidence;
-          totalFat += nutrition['fat']! * confidence;
-          totalFiber += nutrition['fiber']! * confidence;
+      debugPrint('🔍 Buscando nutrición para: "$foodName" (confianza: ${(confidence * 100).toStringAsFixed(1)}%)');
 
-          // Agregar beneficios
-          if (nutrition['benefits'] != null) {
-            beneficios.addAll((nutrition['benefits'] as List).cast<String>());
+      // Buscar coincidencia exacta o parcial en base de datos
+      Map<String, dynamic>? matchedNutrition;
+      String? matchedKey;
+
+      // Primero: coincidencia exacta
+      if (nutritionDb.containsKey(foodName)) {
+        matchedNutrition = nutritionDb[foodName];
+        matchedKey = foodName;
+        debugPrint('✅ Coincidencia exacta: $matchedKey');
+      } else {
+        // Segundo: coincidencia parcial (buscar si el nombre contiene alguna palabra clave)
+        for (final entry in nutritionDb.entries) {
+          final key = entry.key;
+          // Si el nombre detectado contiene la palabra clave O viceversa
+          if (foodName.contains(key) || key.contains(foodName)) {
+            matchedNutrition = entry.value;
+            matchedKey = key;
+            debugPrint('✅ Coincidencia parcial: "$foodName" → $matchedKey');
+            break;
           }
-          if (nutrition['micronutrients'] != null) {
-            micronutrientes
-                .addAll((nutrition['micronutrients'] as List).cast<String>());
-          }
-          break;
         }
       }
+
+      // Si encontramos coincidencia, sumar valores nutricionales
+      if (matchedNutrition != null) {
+        // Ponderar por confianza de detección
+        final weight = confidence > 0.5 ? confidence : 0.5; // Mínimo 50% de peso
+        
+        totalCalories += matchedNutrition['calories']! * weight;
+        totalProtein += matchedNutrition['protein']! * weight;
+        totalCarbs += matchedNutrition['carbs']! * weight;
+        totalFat += matchedNutrition['fat']! * weight;
+        totalFiber += matchedNutrition['fiber']! * weight;
+
+        debugPrint('📊 Sumado: ${matchedNutrition['calories']} kcal × $weight = ${(matchedNutrition['calories']! * weight).toStringAsFixed(1)} kcal');
+
+        // Agregar beneficios únicos
+        if (matchedNutrition['benefits'] != null) {
+          beneficios.addAll((matchedNutrition['benefits'] as List).cast<String>());
+        }
+        if (matchedNutrition['micronutrients'] != null) {
+          micronutrientes.addAll((matchedNutrition['micronutrients'] as List).cast<String>());
+        }
+      } else {
+        debugPrint('⚠️ No se encontró nutrición para: "$foodName" - usando valores genéricos');
+        // Valores genéricos si no encontramos el alimento
+        totalCalories += 150.0 * confidence;
+        totalProtein += 8.0 * confidence;
+        totalCarbs += 20.0 * confidence;
+        totalFat += 5.0 * confidence;
+        totalFiber += 2.0 * confidence;
+      }
     }
+
+    debugPrint('📈 Total calculado: ${totalCalories.toStringAsFixed(1)} kcal, ${totalProtein.toStringAsFixed(1)}g proteína');
 
     // Determinar nivel saludable
     final nivelSaludable = _determineHealthLevel(
@@ -211,10 +245,11 @@ class ClarifaiService {
     return 'Alimento balanceado. Disfrútalo como parte de una dieta variada.';
   }
 
-  /// Base de datos simplificada de nutrición por 100g
-  /// En producción, usa una API real como Edamam o Nutritionix
+  /// Base de datos expandida de nutrición por 100g
+  /// Datos aproximados para demostración - En producción usa API real
   Map<String, Map<String, dynamic>> _getFoodNutritionDatabase() {
     return {
+      // CARNES Y PROTEÍNAS
       'chicken': {
         'calories': 165.0,
         'protein': 31.0,
@@ -224,23 +259,41 @@ class ClarifaiService {
         'benefits': ['Alto en proteínas', 'Bajo en grasas'],
         'micronutrients': ['Vitamina B6', 'Niacina'],
       },
-      'rice': {
-        'calories': 130.0,
-        'protein': 2.7,
-        'carbs': 28.0,
-        'fat': 0.3,
-        'fiber': 0.4,
-        'benefits': ['Fuente de energía', 'Sin gluten'],
-        'micronutrients': ['Magnesio', 'Hierro'],
+      'beef': {
+        'calories': 250.0,
+        'protein': 26.0,
+        'carbs': 0.0,
+        'fat': 15.0,
+        'fiber': 0.0,
+        'benefits': ['Alto en proteínas', 'Rico en hierro'],
+        'micronutrients': ['Hierro', 'Zinc', 'Vitamina B12'],
       },
-      'broccoli': {
-        'calories': 34.0,
-        'protein': 2.8,
-        'carbs': 7.0,
-        'fat': 0.4,
-        'fiber': 2.6,
-        'benefits': ['Alto en fibra', 'Rico en vitaminas'],
-        'micronutrients': ['Vitamina C', 'Vitamina K', 'Calcio'],
+      'pork': {
+        'calories': 242.0,
+        'protein': 27.0,
+        'carbs': 0.0,
+        'fat': 14.0,
+        'fiber': 0.0,
+        'benefits': ['Fuente de proteínas', 'Rico en tiamina'],
+        'micronutrients': ['Tiamina', 'Selenio'],
+      },
+      'bacon': {
+        'calories': 541.0,
+        'protein': 37.0,
+        'carbs': 1.4,
+        'fat': 42.0,
+        'fiber': 0.0,
+        'benefits': ['Alto en proteínas'],
+        'micronutrients': ['Selenio', 'Fósforo'],
+      },
+      'salmon': {
+        'calories': 208.0,
+        'protein': 20.0,
+        'carbs': 0.0,
+        'fat': 13.0,
+        'fiber': 0.0,
+        'benefits': ['Omega-3', 'Alto en proteínas'],
+        'micronutrients': ['Vitamina D', 'Selenio'],
       },
       'egg': {
         'calories': 155.0,
@@ -251,6 +304,84 @@ class ClarifaiService {
         'benefits': ['Proteína completa', 'Rico en nutrientes'],
         'micronutrients': ['Vitamina B12', 'Colina'],
       },
+
+      // LÁCTEOS
+      'cheese': {
+        'calories': 402.0,
+        'protein': 25.0,
+        'carbs': 1.3,
+        'fat': 33.0,
+        'fiber': 0.0,
+        'benefits': ['Alto en calcio', 'Fuente de proteínas'],
+        'micronutrients': ['Calcio', 'Vitamina A', 'Fósforo'],
+      },
+      'milk': {
+        'calories': 61.0,
+        'protein': 3.2,
+        'carbs': 4.8,
+        'fat': 3.3,
+        'fiber': 0.0,
+        'benefits': ['Rico en calcio', 'Fuente de vitamina D'],
+        'micronutrients': ['Calcio', 'Vitamina D'],
+      },
+      'yogurt': {
+        'calories': 59.0,
+        'protein': 10.0,
+        'carbs': 3.6,
+        'fat': 0.4,
+        'fiber': 0.0,
+        'benefits': ['Probióticos', 'Alto en proteínas'],
+        'micronutrients': ['Calcio', 'Vitamina B12'],
+      },
+      'butter': {
+        'calories': 717.0,
+        'protein': 0.9,
+        'carbs': 0.1,
+        'fat': 81.0,
+        'fiber': 0.0,
+        'benefits': ['Fuente de vitamina A'],
+        'micronutrients': ['Vitamina A', 'Vitamina E'],
+      },
+
+      // CEREALES Y GRANOS
+      'rice': {
+        'calories': 130.0,
+        'protein': 2.7,
+        'carbs': 28.0,
+        'fat': 0.3,
+        'fiber': 0.4,
+        'benefits': ['Fuente de energía', 'Sin gluten'],
+        'micronutrients': ['Magnesio', 'Hierro'],
+      },
+      'bread': {
+        'calories': 265.0,
+        'protein': 9.0,
+        'carbs': 49.0,
+        'fat': 3.2,
+        'fiber': 2.7,
+        'benefits': ['Fuente de carbohidratos'],
+        'micronutrients': ['Hierro', 'Vitamina B1'],
+      },
+      'pasta': {
+        'calories': 131.0,
+        'protein': 5.0,
+        'carbs': 25.0,
+        'fat': 1.1,
+        'fiber': 1.8,
+        'benefits': ['Energía sostenida'],
+        'micronutrients': ['Hierro', 'Magnesio'],
+      },
+      'oats': {
+        'calories': 389.0,
+        'protein': 16.9,
+        'carbs': 66.0,
+        'fat': 6.9,
+        'fiber': 10.6,
+        'benefits': ['Alto en fibra', 'Reduce colesterol'],
+        'micronutrients': ['Manganeso', 'Fósforo'],
+      },
+
+      // FRUTAS
       'banana': {
         'calories': 89.0,
         'protein': 1.1,
@@ -260,14 +391,155 @@ class ClarifaiService {
         'benefits': ['Rico en potasio', 'Energía rápida'],
         'micronutrients': ['Potasio', 'Vitamina B6'],
       },
-      'salmon': {
-        'calories': 208.0,
-        'protein': 20.0,
-        'carbs': 0.0,
-        'fat': 13.0,
-        'fiber': 0.0,
-        'benefits': ['Omega-3', 'Alto en proteínas'],
-        'micronutrients': ['Vitamina D', 'Selenio'],
+      'apple': {
+        'calories': 52.0,
+        'protein': 0.3,
+        'carbs': 14.0,
+        'fat': 0.2,
+        'fiber': 2.4,
+        'benefits': ['Alto en fibra', 'Antioxidantes'],
+        'micronutrients': ['Vitamina C', 'Potasio'],
+      },
+      'orange': {
+        'calories': 47.0,
+        'protein': 0.9,
+        'carbs': 12.0,
+        'fat': 0.1,
+        'fiber': 2.4,
+        'benefits': ['Rico en vitamina C'],
+        'micronutrients': ['Vitamina C', 'Folato'],
+      },
+      'strawberry': {
+        'calories': 32.0,
+        'protein': 0.7,
+        'carbs': 7.7,
+        'fat': 0.3,
+        'fiber': 2.0,
+        'benefits': ['Antioxidantes', 'Bajo en calorías'],
+        'micronutrients': ['Vitamina C', 'Manganeso'],
+      },
+
+      // VEGETALES
+      'broccoli': {
+        'calories': 34.0,
+        'protein': 2.8,
+        'carbs': 7.0,
+        'fat': 0.4,
+        'fiber': 2.6,
+        'benefits': ['Alto en fibra', 'Rico en vitaminas'],
+        'micronutrients': ['Vitamina C', 'Vitamina K', 'Calcio'],
+      },
+      'tomato': {
+        'calories': 18.0,
+        'protein': 0.9,
+        'carbs': 3.9,
+        'fat': 0.2,
+        'fiber': 1.2,
+        'benefits': ['Rico en licopeno', 'Antioxidantes'],
+        'micronutrients': ['Vitamina C', 'Potasio'],
+      },
+      'lettuce': {
+        'calories': 15.0,
+        'protein': 1.4,
+        'carbs': 2.9,
+        'fat': 0.2,
+        'fiber': 1.3,
+        'benefits': ['Muy bajo en calorías', 'Hidratante'],
+        'micronutrients': ['Vitamina A', 'Vitamina K'],
+      },
+      'potato': {
+        'calories': 77.0,
+        'protein': 2.0,
+        'carbs': 17.0,
+        'fat': 0.1,
+        'fiber': 2.2,
+        'benefits': ['Fuente de carbohidratos', 'Rico en potasio'],
+        'micronutrients': ['Potasio', 'Vitamina C'],
+      },
+
+      // COMIDAS PREPARADAS
+      'hamburger': {
+        'calories': 295.0,
+        'protein': 17.0,
+        'carbs': 24.0,
+        'fat': 14.0,
+        'fiber': 1.5,
+        'benefits': ['Completo en macronutrientes'],
+        'micronutrients': ['Hierro', 'Vitamina B12'],
+      },
+      'burger': {
+        'calories': 295.0,
+        'protein': 17.0,
+        'carbs': 24.0,
+        'fat': 14.0,
+        'fiber': 1.5,
+        'benefits': ['Completo en macronutrientes'],
+        'micronutrients': ['Hierro', 'Vitamina B12'],
+      },
+      'pizza': {
+        'calories': 266.0,
+        'protein': 11.0,
+        'carbs': 33.0,
+        'fat': 10.0,
+        'fiber': 2.3,
+        'benefits': ['Completo en macronutrientes'],
+        'micronutrients': ['Calcio', 'Hierro'],
+      },
+      'sandwich': {
+        'calories': 250.0,
+        'protein': 12.0,
+        'carbs': 30.0,
+        'fat': 9.0,
+        'fiber': 2.5,
+        'benefits': ['Comida completa y práctica'],
+        'micronutrients': ['Hierro', 'Vitamina B'],
+      },
+      'salad': {
+        'calories': 52.0,
+        'protein': 2.5,
+        'carbs': 8.0,
+        'fat': 1.5,
+        'fiber': 3.0,
+        'benefits': ['Bajo en calorías', 'Alto en fibra'],
+        'micronutrients': ['Vitamina A', 'Vitamina C', 'Hierro'],
+      },
+
+      // POSTRES Y SNACKS
+      'cookie': {
+        'calories': 488.0,
+        'protein': 6.0,
+        'carbs': 65.0,
+        'fat': 23.0,
+        'fiber': 2.0,
+        'benefits': ['Energía rápida'],
+        'micronutrients': ['Hierro', 'Calcio'],
+      },
+      'cake': {
+        'calories': 257.0,
+        'protein': 4.0,
+        'carbs': 38.0,
+        'fat': 10.0,
+        'fiber': 0.9,
+        'benefits': ['Energía rápida'],
+        'micronutrients': ['Calcio'],
+      },
+      'chocolate': {
+        'calories': 546.0,
+        'protein': 5.0,
+        'carbs': 61.0,
+        'fat': 31.0,
+        'fiber': 7.0,
+        'benefits': ['Antioxidantes', 'Mejora el ánimo'],
+        'micronutrients': ['Magnesio', 'Hierro'],
+      },
+      'ice cream': {
+        'calories': 207.0,
+        'protein': 3.5,
+        'carbs': 24.0,
+        'fat': 11.0,
+        'fiber': 0.7,
+        'benefits': ['Fuente de calcio'],
+        'micronutrients': ['Calcio', 'Vitamina A'],
       },
     };
   }
