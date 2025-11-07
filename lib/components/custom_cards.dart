@@ -23,6 +23,37 @@ class ProgramCard extends StatelessWidget {
     required this.onTap,
   });
 
+  /// Determina si la imagen es local (asset) o remota (URL)
+  Widget _buildImage(String imageUrl) {
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      // Imagen remota
+      return Image.network(
+        imageUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Center(
+          child: Icon(
+            Icons.fitness_center,
+            size: 48,
+            color: ColorPalette.textTertiary,
+          ),
+        ),
+      );
+    } else {
+      // Imagen local (asset)
+      return Image.asset(
+        imageUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Center(
+          child: Icon(
+            Icons.fitness_center,
+            size: 48,
+            color: ColorPalette.textTertiary,
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -54,24 +85,18 @@ class ProgramCard extends StatelessWidget {
                   Container(
                     height: 140,
                     width: double.infinity,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: ColorPalette.cardBackgroundLight,
-                      image: imageUrl != null
-                          ? DecorationImage(
-                              image: NetworkImage(imageUrl!),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
                     ),
-                    child: imageUrl == null
-                        ? const Center(
+                    child: imageUrl != null
+                        ? _buildImage(imageUrl!)
+                        : const Center(
                             child: Icon(
                               Icons.fitness_center,
                               size: 48,
                               color: ColorPalette.textTertiary,
                             ),
-                          )
-                        : null,
+                          ),
                   ),
                   if (isPopular)
                     Positioned(
@@ -190,6 +215,41 @@ class RoutineCard extends StatelessWidget {
     required this.onTap,
   });
 
+  /// Determina si la imagen es local (asset) o remota (URL)
+  Widget _buildImage(String imageUrl) {
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      // Imagen remota
+      return Image.network(
+        imageUrl,
+        width: 100,
+        height: 100,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Center(
+          child: Icon(
+            Icons.play_circle_outline,
+            size: 40,
+            color: ColorPalette.primary,
+          ),
+        ),
+      );
+    } else {
+      // Imagen local (asset)
+      return Image.asset(
+        imageUrl,
+        width: 100,
+        height: 100,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Center(
+          child: Icon(
+            Icons.play_circle_outline,
+            size: 40,
+            color: ColorPalette.primary,
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -231,12 +291,7 @@ class RoutineCard extends StatelessWidget {
                         topLeft: Radius.circular(AppTheme.radiusMedium),
                         bottomLeft: Radius.circular(AppTheme.radiusMedium),
                       ),
-                      child: Image.network(
-                        imageUrl!,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
-                      ),
+                      child: _buildImage(imageUrl!),
                     )
                   else
                     const Center(
@@ -360,6 +415,41 @@ class FoodCard extends StatelessWidget {
     required this.onTap,
   });
 
+  /// Determina si la imagen es local (asset) o remota (URL)
+  Widget _buildImage(String imageUrl) {
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      // Imagen remota
+      return Image.network(
+        imageUrl,
+        width: 100,
+        height: 100,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Center(
+          child: Icon(
+            Icons.restaurant,
+            color: ColorPalette.primary,
+            size: 36,
+          ),
+        ),
+      );
+    } else {
+      // Imagen local (asset)
+      return Image.asset(
+        imageUrl,
+        width: 100,
+        height: 100,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Center(
+          child: Icon(
+            Icons.restaurant,
+            color: ColorPalette.primary,
+            size: 36,
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -384,8 +474,8 @@ class FoodCard extends StatelessWidget {
           children: [
             // Imagen
             Container(
-              width: 80,
-              height: 80,
+              width: 100,
+              height: 100,
               decoration: const BoxDecoration(
                 color: ColorPalette.cardBackgroundLight,
                 borderRadius: BorderRadius.only(
@@ -399,16 +489,13 @@ class FoodCard extends StatelessWidget {
                         topLeft: Radius.circular(AppTheme.radiusMedium),
                         bottomLeft: Radius.circular(AppTheme.radiusMedium),
                       ),
-                      child: Image.network(
-                        imageUrl!,
-                        fit: BoxFit.cover,
-                      ),
+                      child: _buildImage(imageUrl!),
                     )
                   : const Center(
                       child: Icon(
                         Icons.restaurant,
                         color: ColorPalette.primary,
-                        size: 32,
+                        size: 36,
                       ),
                     ),
             ),
@@ -505,6 +592,49 @@ class ArticleCard extends StatelessWidget {
     required this.onTap,
   });
 
+  /// Determina si la imagen es local (asset) o remota (URL)
+  Widget _buildImage(String imageUrl) {
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      // Imagen remota
+      return Image.network(
+        imageUrl,
+        height: 160,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Container(
+          height: 160,
+          color: ColorPalette.cardBackgroundLight,
+          child: const Center(
+            child: Icon(
+              Icons.article,
+              size: 48,
+              color: ColorPalette.textTertiary,
+            ),
+          ),
+        ),
+      );
+    } else {
+      // Imagen local (asset)
+      return Image.asset(
+        imageUrl,
+        height: 160,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Container(
+          height: 160,
+          color: ColorPalette.cardBackgroundLight,
+          child: const Center(
+            child: Icon(
+              Icons.article,
+              size: 48,
+              color: ColorPalette.textTertiary,
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -535,12 +665,7 @@ class ArticleCard extends StatelessWidget {
                   topLeft: Radius.circular(AppTheme.radiusMedium),
                   topRight: Radius.circular(AppTheme.radiusMedium),
                 ),
-                child: Image.network(
-                  imageUrl!,
-                  height: 160,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                child: _buildImage(imageUrl!),
               ),
             // Información
             Padding(

@@ -89,8 +89,9 @@ class EdamamService {
 
     // Micronutrientes destacados
     final micronutrients = <String>[];
-    if (_getQuantity(nutrients, 'VITA_RAE') > 0)
+    if (_getQuantity(nutrients, 'VITA_RAE') > 0) {
       micronutrients.add('Vitamina A');
+    }
     if (_getQuantity(nutrients, 'VITC') > 0) micronutrients.add('Vitamina C');
     if (_getQuantity(nutrients, 'CA') > 0) micronutrients.add('Calcio');
     if (_getQuantity(nutrients, 'FE') > 0) micronutrients.add('Hierro');

@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:vivofit/components/custom_button.dart';
 import 'package:vivofit/services/supabase_user_service.dart';
 import 'package:vivofit/services/supabase_auth_service.dart';
-import 'package:vivofit/services/supabase_workout_service.dart';
 import 'package:vivofit/theme/app_theme.dart';
 import 'package:vivofit/theme/color_palette.dart';
 import 'package:vivofit/navigation/app_routes.dart';
