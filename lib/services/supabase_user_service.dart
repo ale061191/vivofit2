@@ -131,13 +131,9 @@ class SupabaseUserService extends ChangeNotifier {
       // 1. Verificar si el usuario ya existe en la tabla
       final existingUser = await _supabase
           .from(SupabaseConfig.usersTable)
-          .select('id, email, name, gender, created_at')
+          .select('id, email, name, created_at')
           .eq('id', userId)
           .maybeSingle();
-
-      final existingGender = existingUser?['gender'] as String?;
-      final normalizedExistingGender = _normalizeGender(existingGender);
-      final normalizedGenderInput = _normalizeGender(gender);
 
       // 2. Preparar datos comunes
       final Map<String, dynamic> data = {};
@@ -146,16 +142,7 @@ class SupabaseUserService extends ChangeNotifier {
       if (height != null) data['height'] = height;
       if (weight != null) data['weight'] = weight;
       if (age != null) data['age'] = age;
-      if (normalizedGenderInput != null) {
-        data['gender'] = normalizedGenderInput;
-      } else if (existingGender != null) {
-        if (normalizedExistingGender != null &&
-            normalizedExistingGender != existingGender) {
-          data['gender'] = normalizedExistingGender;
-        } else if (normalizedExistingGender == null) {
-          data['gender'] = null;
-        }
-      }
+      if (gender != null) data['gender'] = gender;
       if (location != null) data['location'] = location;
 
       debugPrint('📝 Datos a guardar: $data');
@@ -168,21 +155,13 @@ class SupabaseUserService extends ChangeNotifier {
             '⚠️⚠️⚠️ ALERTA: Usuario existe en Auth pero NO en tabla users');
         debugPrint('🔧 Creando registro faltante...');
 
-        final insertData = Map<String, dynamic>.from(data)
-          ..putIfAbsent(
-            'name',
-            () => authUser.userMetadata?['name'] ??
-                authUser.email!.split('@')[0],
-          )
-          ..putIfAbsent('gender', () => normalizedGenderInput)
-          ..putIfAbsent('id', () => userId)
-          ..putIfAbsent('email', () => authUser.email!)
-          ..putIfAbsent(
-            'created_at',
-            () => DateTime.now().toIso8601String(),
-          );
+        data['id'] = userId;
+        data['email'] = authUser.email!;
+        data['name'] =
+            authUser.userMetadata?['name'] ?? authUser.email!.split('@')[0];
+        data['created_at'] = DateTime.now().toIso8601String();
 
-        await _supabase.from(SupabaseConfig.usersTable).insert(insertData);
+        await _supabase.from(SupabaseConfig.usersTable).insert(data);
 
         debugPrint('✅ Perfil creado exitosamente (recuperación de error)');
       } else {
@@ -190,12 +169,11 @@ class SupabaseUserService extends ChangeNotifier {
         debugPrint('✏️ Usuario existe en tabla users, actualizando...');
         debugPrint('📋 Datos actuales: $existingUser');
 
-        final updateData = Map<String, dynamic>.from(data)
-          ..['updated_at'] = DateTime.now().toIso8601String();
+        data['updated_at'] = DateTime.now().toIso8601String();
 
         await _supabase
             .from(SupabaseConfig.usersTable)
-            .update(updateData)
+            .update(data)
             .eq('id', userId);
 
         debugPrint('✅ Perfil actualizado exitosamente');
@@ -310,7 +288,7 @@ class SupabaseUserService extends ChangeNotifier {
       height: (data['height'] as num?)?.toDouble(),
       weight: (data['weight'] as num?)?.toDouble(),
       age: data['age'] as int?,
-      gender: _normalizeGender(data['gender'] as String?),
+      gender: data['gender'] as String?,
       location: data['location'] as String?,
       createdAt: data['created_at'] != null
           ? DateTime.parse(data['created_at'] as String)
@@ -322,24 +300,5 @@ class SupabaseUserService extends ChangeNotifier {
   void clearUser() {
     _currentUser = null;
     notifyListeners();
-  }
-
-  String? _normalizeGender(String? value) {
-    if (value == null) return null;
-    final normalized = value.toString().trim().toLowerCase();
-
-    switch (normalized) {
-      case 'male':
-      case 'masculino':
-        return 'male';
-      case 'female':
-      case 'femenino':
-        return 'female';
-      case 'other':
-      case 'otro':
-        return 'other';
-      default:
-        return null;
-    }
   }
 }
