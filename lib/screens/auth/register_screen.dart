@@ -102,6 +102,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                const SizedBox(height: 40),
+
+                // Logo de Vivofit (idéntico al de login)
+                Center(
+                  child: Image.asset(
+                    'assets/images/logo/vivofit-logo.png',
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      // Fallback si el logo no se carga
+                      return const Icon(
+                        Icons.fitness_center,
+                        size: 80,
+                        color: ColorPalette.primary,
+                      );
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
                 Text(
                   'Crear Cuenta',
                   style: Theme.of(context).textTheme.displayMedium,

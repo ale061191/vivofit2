@@ -57,8 +57,19 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 400),
     );
+    // Iniciar animación para la primera pantalla con delay
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        // Pequeño delay para asegurar que todo esté cargado
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (mounted) {
+            _animationController.forward();
+          }
+        });
+      }
+    });
   }
 
   @override
@@ -82,7 +93,19 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               setState(() {
                 _currentPage = index;
               });
-              _animationController.forward(from: 0);
+              // Reset animación
+              _animationController.reset();
+              
+              // Agregar delay para textos desde la segunda pantalla (index > 0)
+              final delay = index > 0 
+                  ? const Duration(milliseconds: 500)  // Delay de 500ms para pantallas 2, 3, 4
+                  : const Duration(milliseconds: 100);  // Delay mínimo para primera pantalla
+              
+              Future.delayed(delay, () {
+                if (mounted) {
+                  _animationController.forward();
+                }
+              });
             },
             itemCount: _items.length,
             // Permite deslizar en ambas direcciones
