@@ -102,8 +102,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 40),
-
+                // Sin SizedBox inicial para que coincida con login
                 // Logo de Vivofit (idéntico al de login)
                 Center(
                   child: Image.asset(

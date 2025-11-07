@@ -89,18 +89,21 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           // PageView con transiciones suaves y swipe bidireccional
           PageView.builder(
             controller: _pageController,
-            onPageChanged: (index) {
+            onPageChanged: (index) async {
               setState(() {
                 _currentPage = index;
               });
-              // Reset animación
+              // Reset animación inmediatamente (ocultar texto)
               _animationController.reset();
-              
-              // Agregar delay para textos desde la segunda pantalla (index > 0)
-              final delay = index > 0 
-                  ? const Duration(milliseconds: 500)  // Delay de 500ms para pantallas 2, 3, 4
-                  : const Duration(milliseconds: 100);  // Delay mínimo para primera pantalla
-              
+
+              // Esperar a que la transición de página termine completamente
+              // La duración de animateToPage es 400ms, así que esperamos eso + delay adicional
+              final delay = index > 0
+                  ? const Duration(
+                      milliseconds: 700) // 400ms transición + 300ms delay extra
+                  : const Duration(
+                      milliseconds: 100); // Delay mínimo para primera pantalla
+
               Future.delayed(delay, () {
                 if (mounted) {
                   _animationController.forward();
