@@ -47,28 +47,52 @@ class SupabaseAuthService extends ChangeNotifier {
         throw Exception('Error al crear usuario');
       }
 
-      // Crear registro en la tabla users usando función RPC que bypasea RLS
-      // No necesitamos esperar autenticación porque la función usa SECURITY DEFINER
+      final userId = response.user!.id;
+
+      debugPrint('🔐 Usuario registrado en Auth: $userId');
+      debugPrint('📧 Email: $email, Nombre: $name');
+
+      // Crear registro en la tabla users INMEDIATAMENTE después del registro
+      // Esto asegura que el usuario siempre tenga un perfil completo
       try {
-        await _supabase.rpc('create_user_profile', params: {
-          'user_id': response.user!.id,
-          'user_email': email,
-          'user_name': name,
+        debugPrint('➕ Creando perfil en tabla users...');
+        
+        await _supabase.from(SupabaseConfig.usersTable).insert({
+          'id': userId,
+          'email': email,
+          'name': name,
+          'created_at': DateTime.now().toIso8601String(),
         });
-        debugPrint('✅ Perfil de usuario creado exitosamente via RPC');
+
+        debugPrint('✅ Perfil de usuario creado exitosamente en tabla users');
+        debugPrint('✅ Usuario puede editar su perfil sin problemas');
       } catch (insertError) {
-        debugPrint('❌ Error al crear perfil via RPC: $insertError');
-        // Continuar de todos modos, el usuario existe en Auth
+        debugPrint('❌ Error al crear perfil en tabla users: $insertError');
+        debugPrint('⚠️ El usuario existe en Auth pero no en tabla users');
+        debugPrint('⚠️ Esto causará problemas al editar perfil');
+        
+        // CRÍTICO: Si falla aquí, intentar eliminar el usuario de Auth
+        // para evitar inconsistencia entre Auth y tabla users
+        try {
+          debugPrint('🔄 Intentando rollback de Auth...');
+          await _supabase.auth.signOut();
+          throw Exception(
+            'Error al crear perfil. Por favor verifica las políticas RLS de Supabase e intenta nuevamente.'
+          );
+        } catch (rollbackError) {
+          debugPrint('❌ Error en rollback: $rollbackError');
+          throw Exception(
+            'Error crítico al crear perfil. Contacta al administrador.'
+          );
+        }
       }
 
       // Si la confirmación de email está deshabilitada, el usuario ya está autenticado
       // Si está habilitada, necesitará confirmar su email primero
-      debugPrint('Usuario registrado: ${response.user!.id}');
-      debugPrint(
-          'Email confirmado: ${response.user!.emailConfirmedAt != null}');
+      debugPrint('📧 Email confirmado: ${response.user!.emailConfirmedAt != null}');
 
       notifyListeners();
-      return response.user!.id;
+      return userId;
     } on AuthException catch (e) {
       debugPrint('Error de autenticación en registro: ${e.message}');
       throw Exception('Error al registrar: ${e.message}');

@@ -54,23 +54,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       // getCurrentUser() obtiene automáticamente el usuario autenticado actual
       final user = await userService.getCurrentUser();
 
-      debugPrint('👤 Usuario cargado: ${user?.name}, edad: ${user?.age}, altura: ${user?.height}, peso: ${user?.weight}');
+      debugPrint(
+          '👤 Usuario cargado: ${user?.name}, edad: ${user?.age}, altura: ${user?.height}, peso: ${user?.weight}');
 
       if (user != null && mounted) {
         setState(() {
           // Asegurar que nunca se muestren valores 'N/A' - dejar vacío si es null
-          _nameController.text = (user.name?.isNotEmpty ?? false) 
-              ? user.name! 
-              : '';
+          _nameController.text =
+              (user.name?.isNotEmpty ?? false) ? user.name! : '';
           _ageController.text = user.age?.toString() ?? '';
           _heightController.text = user.height?.toStringAsFixed(0) ?? '';
           _weightController.text = user.weight?.toStringAsFixed(1) ?? '';
-          _phoneController.text = (user.phone?.isNotEmpty ?? false)
-              ? user.phone!
-              : '';
-          _locationController.text = (user.location?.isNotEmpty ?? false)
-              ? user.location!
-              : '';
+          _phoneController.text =
+              (user.phone?.isNotEmpty ?? false) ? user.phone! : '';
+          _locationController.text =
+              (user.location?.isNotEmpty ?? false) ? user.location! : '';
           _selectedGender = user.gender;
           _isLoading = false;
         });

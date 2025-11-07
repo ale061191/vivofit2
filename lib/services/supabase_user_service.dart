@@ -131,7 +131,7 @@ class SupabaseUserService extends ChangeNotifier {
       // 1. Verificar si el usuario ya existe en la tabla
       final existingUser = await _supabase
           .from(SupabaseConfig.usersTable)
-          .select('id')
+          .select('id, email, name, created_at')
           .eq('id', userId)
           .maybeSingle();
 
@@ -149,18 +149,24 @@ class SupabaseUserService extends ChangeNotifier {
 
       // 3. Ejecutar INSERT o UPDATE según corresponda
       if (existingUser == null) {
-        // Usuario NO existe → INSERT
-        debugPrint('➕ Usuario no existe, insertando...');
+        // Usuario NO existe en tabla users (ERROR CRÍTICO de registro)
+        // Esto NO DEBERÍA pasar si el registro funciona correctamente
+        debugPrint('⚠️⚠️⚠️ ALERTA: Usuario existe en Auth pero NO en tabla users');
+        debugPrint('🔧 Creando registro faltante...');
+        
         data['id'] = userId;
         data['email'] = authUser.email!;
+        data['name'] = authUser.userMetadata?['name'] ?? authUser.email!.split('@')[0];
         data['created_at'] = DateTime.now().toIso8601String();
 
         await _supabase.from(SupabaseConfig.usersTable).insert(data);
 
-        debugPrint('✅ Perfil insertado exitosamente');
+        debugPrint('✅ Perfil creado exitosamente (recuperación de error)');
       } else {
-        // Usuario SÍ existe → UPDATE
-        debugPrint('✏️ Usuario existe, actualizando...');
+        // Usuario SÍ existe → UPDATE (flujo normal)
+        debugPrint('✏️ Usuario existe en tabla users, actualizando...');
+        debugPrint('📋 Datos actuales: $existingUser');
+        
         data['updated_at'] = DateTime.now().toIso8601String();
 
         await _supabase
