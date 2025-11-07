@@ -12,7 +12,7 @@ class NutritionalAnalysis {
   final DateTime fechaAnalisis;
   final String? imagePath;
 
-  NutritionalAnalysis({
+  const NutritionalAnalysis({
     required this.nombre,
     required this.porcionEstimada,
     required this.calorias,
@@ -25,6 +25,37 @@ class NutritionalAnalysis {
     required this.fechaAnalisis,
     this.imagePath,
   });
+
+  /// Crea una copia del análisis con los campos especificados actualizados
+  /// Utiliza defensive copying para listas para evitar mutaciones accidentales
+  NutritionalAnalysis copyWith({
+    String? nombre,
+    String? porcionEstimada,
+    int? calorias,
+    Macronutrientes? macronutrientes,
+    List<String>? micronutrientesDestacados,
+    List<String>? beneficios,
+    String? recomendaciones,
+    NivelSaludable? nivelSaludable,
+    List<String>? aptoPara,
+    DateTime? fechaAnalisis,
+    String? imagePath,
+  }) {
+    return NutritionalAnalysis(
+      nombre: nombre ?? this.nombre,
+      porcionEstimada: porcionEstimada ?? this.porcionEstimada,
+      calorias: calorias ?? this.calorias,
+      macronutrientes: macronutrientes ?? this.macronutrientes,
+      micronutrientesDestacados:
+          micronutrientesDestacados ?? List.from(this.micronutrientesDestacados),
+      beneficios: beneficios ?? List.from(this.beneficios),
+      recomendaciones: recomendaciones ?? this.recomendaciones,
+      nivelSaludable: nivelSaludable ?? this.nivelSaludable,
+      aptoPara: aptoPara ?? List.from(this.aptoPara),
+      fechaAnalisis: fechaAnalisis ?? this.fechaAnalisis,
+      imagePath: imagePath ?? this.imagePath,
+    );
+  }
 
   factory NutritionalAnalysis.fromJson(Map<String, dynamic> json) {
     return NutritionalAnalysis(
