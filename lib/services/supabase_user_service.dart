@@ -14,6 +14,27 @@ class SupabaseUserService extends ChangeNotifier {
   app_user.User? get currentUser => _currentUser;
   bool get isLoading => _isLoading;
 
+  /// Obtener perfil de un usuario específico por ID
+  Future<app_user.User?> getUserProfile(String userId) async {
+    try {
+      final response = await _supabase
+          .from(SupabaseConfig.usersTable)
+          .select()
+          .eq('id', userId)
+          .maybeSingle();
+
+      if (response == null) {
+        debugPrint('⚠️ Usuario $userId no encontrado');
+        return null;
+      }
+
+      return _userFromSupabase(response);
+    } catch (e) {
+      debugPrint('❌ Error al obtener perfil de usuario $userId: $e');
+      return null;
+    }
+  }
+
   /// Obtener datos del usuario actual
   Future<app_user.User?> getCurrentUser() async {
     try {
@@ -51,12 +72,12 @@ class SupabaseUserService extends ChangeNotifier {
             .from(SupabaseConfig.usersTable)
             .select()
             .eq('id', authUser.id)
-            .single() as Map<String, dynamic>;
+            .single();
 
         _currentUser = _userFromSupabase(newResponse);
       } else {
         // Cast explícito para resolver el error de tipo Object?
-        _currentUser = _userFromSupabase(response as Map<String, dynamic>);
+        _currentUser = _userFromSupabase(response);
       }
 
       debugPrint(

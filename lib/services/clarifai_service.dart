@@ -133,7 +133,8 @@ class ClarifaiService {
       final foodName = (food['name'] as String).toLowerCase().trim();
       final confidence = (food['value'] as num).toDouble();
 
-      debugPrint('🔍 Buscando nutrición para: "$foodName" (confianza: ${(confidence * 100).toStringAsFixed(1)}%)');
+      debugPrint(
+          '🔍 Buscando nutrición para: "$foodName" (confianza: ${(confidence * 100).toStringAsFixed(1)}%)');
 
       // Buscar coincidencia exacta o parcial en base de datos
       Map<String, dynamic>? matchedNutrition;
@@ -161,25 +162,30 @@ class ClarifaiService {
       // Si encontramos coincidencia, sumar valores nutricionales
       if (matchedNutrition != null) {
         // Ponderar por confianza de detección
-        final weight = confidence > 0.5 ? confidence : 0.5; // Mínimo 50% de peso
-        
+        final weight =
+            confidence > 0.5 ? confidence : 0.5; // Mínimo 50% de peso
+
         totalCalories += matchedNutrition['calories']! * weight;
         totalProtein += matchedNutrition['protein']! * weight;
         totalCarbs += matchedNutrition['carbs']! * weight;
         totalFat += matchedNutrition['fat']! * weight;
         totalFiber += matchedNutrition['fiber']! * weight;
 
-        debugPrint('📊 Sumado: ${matchedNutrition['calories']} kcal × $weight = ${(matchedNutrition['calories']! * weight).toStringAsFixed(1)} kcal');
+        debugPrint(
+            '📊 Sumado: ${matchedNutrition['calories']} kcal × $weight = ${(matchedNutrition['calories']! * weight).toStringAsFixed(1)} kcal');
 
         // Agregar beneficios únicos
         if (matchedNutrition['benefits'] != null) {
-          beneficios.addAll((matchedNutrition['benefits'] as List).cast<String>());
+          beneficios
+              .addAll((matchedNutrition['benefits'] as List).cast<String>());
         }
         if (matchedNutrition['micronutrients'] != null) {
-          micronutrientes.addAll((matchedNutrition['micronutrients'] as List).cast<String>());
+          micronutrientes.addAll(
+              (matchedNutrition['micronutrients'] as List).cast<String>());
         }
       } else {
-        debugPrint('⚠️ No se encontró nutrición para: "$foodName" - usando valores genéricos');
+        debugPrint(
+            '⚠️ No se encontró nutrición para: "$foodName" - usando valores genéricos');
         // Valores genéricos si no encontramos el alimento
         totalCalories += 150.0 * confidence;
         totalProtein += 8.0 * confidence;
@@ -189,13 +195,15 @@ class ClarifaiService {
       }
     }
 
-    debugPrint('📈 Total calculado: ${totalCalories.toStringAsFixed(1)} kcal, ${totalProtein.toStringAsFixed(1)}g proteína');
+    debugPrint(
+        '📈 Total calculado: ${totalCalories.toStringAsFixed(1)} kcal, ${totalProtein.toStringAsFixed(1)}g proteína');
 
     // Determinar nivel saludable
     final nivelSaludable = _determineHealthLevel(
       totalCalories,
       totalProtein,
       totalFat,
+      totalCarbs,
     );
 
     return NutritionalAnalysis(
@@ -210,7 +218,12 @@ class ClarifaiService {
       ),
       micronutrientesDestacados: micronutrientes.toSet().toList(),
       beneficios: beneficios.toSet().take(3).toList(),
-      recomendaciones: _generateRecommendations(totalCalories, totalProtein),
+      recomendaciones: _generateRecommendations(
+        totalCalories,
+        totalProtein,
+        totalFat,
+        totalCarbs,
+      ),
       nivelSaludable: nivelSaludable,
       aptoPara: [], // Se puede agregar lógica para dietas específicas
       fechaAnalisis: DateTime.now(),
@@ -222,27 +235,76 @@ class ClarifaiService {
     double calories,
     double protein,
     double fat,
+    double carbs,
   ) {
     int score = 0;
 
     // Criterios saludables
-    if (calories < 500) score++;
-    if (protein > 20) score++;
-    if (fat < 15) score++;
+    if (calories < 400) score += 2;
+    else if (calories < 600) score++;
+    
+    if (protein > 20) score += 2;
+    else if (protein > 12) score++;
+    
+    if (fat < 10) score += 2;
+    else if (fat < 20) score++;
+    
+    // Penalizaciones
+    if (fat > 30) score -= 2; // Alto en grasas
+    if (calories > 700) score -= 2; // Muy alto en calorías
+    if (carbs > 60 && protein < 10) score--; // Alto en carbs y bajo en proteína
 
-    if (score >= 2) return NivelSaludable.alto;
-    if (score == 1) return NivelSaludable.medio;
+    if (score >= 4) return NivelSaludable.alto;
+    if (score >= 1) return NivelSaludable.medio;
     return NivelSaludable.bajo;
   }
 
-  String _generateRecommendations(double calories, double protein) {
+  String _generateRecommendations(
+    double calories,
+    double protein,
+    double fat,
+    double carbs,
+  ) {
+    // Comidas muy poco saludables (alto en grasas y calorías)
+    if (fat > 30 && calories > 500) {
+      return '⚠️ ATENCIÓN: Comida muy alta en grasas (${fat.toStringAsFixed(1)}g) y calorías. '
+          'Este tipo de alimentos (hamburguesas, pizzas, fritos) deben consumirse ocasionalmente. '
+          'Considera opciones más saludables o reduce el tamaño de la porción.';
+    }
+
+    // Alto en grasas
+    if (fat > 25) {
+      return '⚠️ Alto contenido de grasas (${fat.toStringAsFixed(1)}g). '
+          'Limita el consumo de este tipo de alimentos. '
+          'Complementa con vegetales y agua.';
+    }
+
+    // Alto en calorías
     if (calories > 600) {
-      return 'Porción alta en calorías. Considera dividirla en dos comidas o complementar con ejercicio.';
+      return '⚠️ Porción alta en calorías (${calories.round()} kcal). '
+          'Considera dividirla en dos comidas o complementar con ejercicio cardiovascular.';
     }
-    if (protein < 15) {
-      return 'Bajo en proteínas. Considera agregar pollo, pescado, huevos o legumbres.';
+
+    // Bajo en proteínas
+    if (protein < 10 && calories > 300) {
+      return 'Bajo en proteínas (${protein.toStringAsFixed(1)}g). '
+          'Considera agregar pollo, pescado, huevos o legumbres para mayor saciedad.';
     }
-    return 'Alimento balanceado. Disfrútalo como parte de una dieta variada.';
+
+    // Alto en carbohidratos simples
+    if (carbs > 50 && fat > 20) {
+      return 'Combinación alta en carbohidratos y grasas. '
+          'Consume con moderación y balancea con proteínas magras.';
+    }
+
+    // Comida balanceada
+    if (protein > 20 && fat < 15 && calories < 500) {
+      return '✅ Excelente elección. Alimento balanceado y nutritivo. '
+          'Mantén este tipo de opciones en tu dieta regular.';
+    }
+
+    // Default
+    return 'Alimento aceptable. Disfrútalo con moderación como parte de una dieta variada y balanceada.';
   }
 
   /// Base de datos expandida de nutrición por 100g

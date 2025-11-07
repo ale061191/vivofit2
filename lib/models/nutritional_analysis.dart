@@ -46,8 +46,8 @@ class NutritionalAnalysis {
       porcionEstimada: porcionEstimada ?? this.porcionEstimada,
       calorias: calorias ?? this.calorias,
       macronutrientes: macronutrientes ?? this.macronutrientes,
-      micronutrientesDestacados:
-          micronutrientesDestacados ?? List.from(this.micronutrientesDestacados),
+      micronutrientesDestacados: micronutrientesDestacados ??
+          List.from(this.micronutrientesDestacados),
       beneficios: beneficios ?? List.from(this.beneficios),
       recomendaciones: recomendaciones ?? this.recomendaciones,
       nivelSaludable: nivelSaludable ?? this.nivelSaludable,
