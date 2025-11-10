@@ -1,4 +1,6 @@
 /// Utilidad centralizada para datos mock de modelos
+library generic_mock_data;
+
 import 'routine.dart';
 import 'article.dart';
 import 'program.dart';

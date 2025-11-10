@@ -20,11 +20,11 @@ class _MainScreenState extends State<MainScreen> {
   late int _currentIndex;
   late final PageController _pageController;
 
-  final List<Widget> _screens = [
+  final List<Widget> _screens = const [
     HomeScreen(),
-    const NutritionScreen(),
-    const BlogScreen(),
-    const ProfileScreen(),
+    NutritionScreen(),
+    BlogScreen(),
+    ProfileScreen(),
   ];
 
   @override
@@ -54,7 +54,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pantalla Principal')),
       body: PageView(
         controller: _pageController,
         onPageChanged: (index) {

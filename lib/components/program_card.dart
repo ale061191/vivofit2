@@ -48,7 +48,7 @@ class ProgramCard extends StatelessWidget {
                         height: 80,
                         color: ColorPalette.background,
                         child: const Center(
-                          child: Icon(Icons.image,
+                          child: const Icon(Icons.image,
                               size: 48, color: ColorPalette.primary),
                         ),
                       ),

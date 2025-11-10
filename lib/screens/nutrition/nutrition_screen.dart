@@ -230,19 +230,13 @@ class _NutritionScreenState extends State<NutritionScreen> {
                     itemCount: _filteredFoods.length,
                     itemBuilder: (context, index) {
                       final food = _filteredFoods[index];
-                      return GenericCard(
-                        title: food.name,
+                      return FoodCard(
+                        name: food.name,
+                        category: food.categoryTranslated,
+                        preparationTime: food.preparationTimeMinutes,
+                        calories: food.calories,
+                        imageUrl: food.imageUrl,
                         onTap: () => AppRoutes.goToFoodDetail(context, food.id),
-                        content: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ListTile(
-                              title: Text(food.name),
-                              subtitle: Text(food.categoryTranslated),
-                              trailing: Text('${food.calories} cal'),
-                            ),
-                          ],
-                        ),
                       );
                     },
                   ),

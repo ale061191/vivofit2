@@ -55,7 +55,7 @@ class RoutineCard extends StatelessWidget {
                             width: 90,
                             color: ColorPalette.background,
                             child: const Center(
-                              child: Icon(Icons.image,
+                              child: const Icon(Icons.image,
                                   size: 32, color: ColorPalette.primary),
                             ),
                           ),

@@ -7,8 +7,7 @@ import 'package:vivofit/theme/app_theme.dart';
 class ArticleCard extends StatelessWidget {
   final Article article;
   final VoidCallback? onTap;
-  const ArticleCard({Key? key, required this.article, this.onTap})
-      : super(key: key);
+  const ArticleCard({super.key, required this.article, this.onTap});
 
   @override
   Widget build(BuildContext context) {
