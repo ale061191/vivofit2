@@ -60,8 +60,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (user != null && mounted) {
         setState(() {
           // Asegurar que nunca se muestren valores 'N/A' - dejar vacío si es null
-          _nameController.text =
-              (user.name.isNotEmpty ?? false) ? user.name : '';
+          _nameController.text = (user.name.isNotEmpty) ? user.name : '';
           _ageController.text = user.age?.toString() ?? '';
           _heightController.text = user.height?.toStringAsFixed(0) ?? '';
           _weightController.text = user.weight?.toStringAsFixed(1) ?? '';

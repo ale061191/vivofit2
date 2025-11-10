@@ -242,23 +242,39 @@ class ClarifaiService {
     // Criterios saludables
     if (calories < 400) {
       score += 2;
-    } else if (calories < 600) score++;
+    } else if (calories < 600) {
+      score++;
+    }
 
     if (protein > 20) {
       score += 2;
-    } else if (protein > 12) score++;
+    } else if (protein > 12) {
+      score++;
+    }
 
     if (fat < 10) {
       score += 2;
-    } else if (fat < 20) score++;
+    } else if (fat < 20) {
+      score++;
+    }
 
     // Penalizaciones
-    if (fat > 30) score -= 2; // Alto en grasas
-    if (calories > 700) score -= 2; // Muy alto en calorías
-    if (carbs > 60 && protein < 10) score--; // Alto en carbs y bajo en proteína
+    if (fat > 30) {
+      score -= 2; // Alto en grasas
+    }
+    if (calories > 700) {
+      score -= 2; // Muy alto en calorías
+    }
+    if (carbs > 60 && protein < 10) {
+      score--; // Alto en carbs y bajo en proteína
+    }
 
-    if (score >= 4) return NivelSaludable.alto;
-    if (score >= 1) return NivelSaludable.medio;
+    if (score >= 4) {
+      return NivelSaludable.alto;
+    }
+    if (score >= 1) {
+      return NivelSaludable.medio;
+    }
     return NivelSaludable.bajo;
   }
 
@@ -606,6 +622,30 @@ class ClarifaiService {
         'benefits': ['Fuente de calcio'],
         'micronutrients': ['Calcio', 'Vitamina A'],
       },
+    };
+  }
+
+  void processImage(String imagePath) {
+    if (imagePath.isEmpty) {
+      print('No se proporcionó una ruta de imagen.');
+    }
+
+    if (imagePath.endsWith('.jpg')) {
+      print('Procesando imagen JPG.');
+    }
+
+    if (imagePath.endsWith('.png')) {
+      print('Procesando imagen PNG.');
+    }
+  }
+
+  Map<String, double> getNutritionalInfo() {
+    return {
+      'calories': 295.0,
+      'protein': 17.0,
+      'carbs': 24.0,
+      'fat': 14.0,
+      'fiber': 1.5,
     };
   }
 }

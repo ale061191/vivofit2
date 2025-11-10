@@ -2,13 +2,23 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vivofit/config/supabase_config.dart';
 
-/// Servicio de autenticación con Supabase
-/// Gestiona login, registro, sesión y cierre de sesión
-class SupabaseAuthService extends ChangeNotifier {
+/// Clase base para servicios de Supabase
+abstract class SupabaseBaseService {
   final SupabaseClient _supabase = Supabase.instance.client;
 
+  SupabaseClient get client => _supabase;
+
+  /// Manejo de errores comunes
+  void handleError(dynamic error) {
+    debugPrint('Error en servicio Supabase: $error');
+  }
+}
+
+/// Servicio de autenticación con Supabase
+/// Gestiona login, registro, sesión y cierre de sesión
+class SupabaseAuthService extends SupabaseBaseService with ChangeNotifier {
   /// Usuario actualmente autenticado
-  User? get currentUser => _supabase.auth.currentUser;
+  User? get currentUser => client.auth.currentUser;
 
   /// ID del usuario actual
   String? get currentUserId => currentUser?.id;
@@ -21,7 +31,7 @@ class SupabaseAuthService extends ChangeNotifier {
 
   SupabaseAuthService() {
     // Escuchar cambios en el estado de autenticación
-    _supabase.auth.onAuthStateChange.listen((data) {
+    client.auth.onAuthStateChange.listen((data) {
       notifyListeners();
     });
   }
@@ -35,7 +45,7 @@ class SupabaseAuthService extends ChangeNotifier {
   }) async {
     try {
       // Registrar usuario en Supabase Auth
-      final AuthResponse response = await _supabase.auth.signUp(
+      final AuthResponse response = await client.auth.signUp(
         email: email,
         password: password,
         data: {
@@ -57,7 +67,7 @@ class SupabaseAuthService extends ChangeNotifier {
       try {
         debugPrint('➕ Creando perfil en tabla users...');
 
-        await _supabase.from(SupabaseConfig.usersTable).insert({
+        await client.from(SupabaseConfig.usersTable).insert({
           'id': userId,
           'email': email,
           'name': name,
@@ -75,7 +85,7 @@ class SupabaseAuthService extends ChangeNotifier {
         // para evitar inconsistencia entre Auth y tabla users
         try {
           debugPrint('🔄 Intentando rollback de Auth...');
-          await _supabase.auth.signOut();
+          await client.auth.signOut();
           throw Exception(
               'Error al crear perfil. Por favor verifica las políticas RLS de Supabase e intenta nuevamente.');
         } catch (rollbackError) {
@@ -107,7 +117,7 @@ class SupabaseAuthService extends ChangeNotifier {
     required String password,
   }) async {
     try {
-      final AuthResponse response = await _supabase.auth.signInWithPassword(
+      final AuthResponse response = await client.auth.signInWithPassword(
         email: email,
         password: password,
       );
@@ -130,7 +140,7 @@ class SupabaseAuthService extends ChangeNotifier {
   /// Cerrar sesión
   Future<void> logout() async {
     try {
-      await _supabase.auth.signOut();
+      await client.auth.signOut();
       notifyListeners();
     } catch (e) {
       debugPrint('Error al cerrar sesión: $e');
@@ -141,7 +151,7 @@ class SupabaseAuthService extends ChangeNotifier {
   /// Recuperar contraseña
   Future<bool> resetPassword(String email) async {
     try {
-      await _supabase.auth.resetPasswordForEmail(email);
+      await client.auth.resetPasswordForEmail(email);
       return true;
     } catch (e) {
       debugPrint('Error al recuperar contraseña: $e');
@@ -152,7 +162,7 @@ class SupabaseAuthService extends ChangeNotifier {
   /// Verificar si el email ya está registrado
   Future<bool> emailExists(String email) async {
     try {
-      final response = await _supabase
+      final response = await client
           .from(SupabaseConfig.usersTable)
           .select('id')
           .eq('email', email)

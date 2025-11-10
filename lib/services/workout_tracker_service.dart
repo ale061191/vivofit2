@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/workout_session.dart';
 import '../models/analytics_data.dart';
+import 'package:logger/logger.dart';
 
 /// Servicio para gestionar el seguimiento de entrenamientos
 class WorkoutTrackerService {
   static const String _storageKey = 'workout_sessions';
   final SharedPreferences _prefs;
+  final Logger _logger = Logger();
 
   WorkoutTrackerService(this._prefs);
 
@@ -30,7 +32,7 @@ class WorkoutTrackerService {
           .map((json) => WorkoutSession.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      print('Error al cargar sesiones: $e');
+      _logger.e('Error al cargar sesiones: $e');
       return [];
     }
   }
@@ -284,5 +286,14 @@ class WorkoutTrackerService {
     final userSessions = await getUserSessions(userId);
     return userSessions.fold<int>(
         0, (sum, session) => sum + session.caloriesBurned);
+  }
+
+  void trackWorkout(String workoutName) {
+    if (workoutName.isEmpty) {
+      _logger.w('El nombre del entrenamiento está vacío.');
+      return;
+    }
+
+    _logger.i('Seguimiento iniciado para el entrenamiento: $workoutName');
   }
 }

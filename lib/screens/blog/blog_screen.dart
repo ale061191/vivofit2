@@ -64,12 +64,8 @@ class _BlogScreenState extends State<BlogScreen> {
               itemCount: _filteredArticles.length,
               itemBuilder: (context, index) {
                 final article = _filteredArticles[index];
-                return ArticleCard(
+                return GenericCard(
                   title: article.title,
-                  author: article.author,
-                  topic: article.topicTranslated,
-                  readTime: article.readTimeMinutes,
-                  imageUrl: article.imageUrl,
                   onTap: () => AppRoutes.goToArticleDetail(context, article.id),
                 );
               },
