@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vivofit/theme/color_palette.dart';
 import 'package:vivofit/theme/app_theme.dart';
 
-/// Botón personalizado de Vivofit
-/// Componente reutilizable para mantener consistencia en toda la app
+/// Botón reutilizable con soporte para variantes
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
@@ -30,99 +29,50 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (isOutlined) {
-      return _buildOutlinedButton(context);
-    }
-    return _buildElevatedButton(context);
-  }
-
-  Widget _buildElevatedButton(BuildContext context) {
     return SizedBox(
       width: width ?? double.infinity,
       height: height,
-      child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor ?? ColorPalette.primary,
-          foregroundColor: textColor ?? Colors.black,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-          ),
-          elevation: AppTheme.elevationMedium,
-        ),
-        child: isLoading
-            ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-                ),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (icon != null) ...[
-                    Icon(icon, size: 20),
-                    const SizedBox(width: 8),
-                  ],
-                  Text(
-                    text,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-      ),
+      child: isOutlined ? _buildOutlinedButton() : _buildElevatedButton(),
     );
   }
 
-  Widget _buildOutlinedButton(BuildContext context) {
-    return SizedBox(
-      width: width ?? double.infinity,
-      height: height,
-      child: OutlinedButton(
-        onPressed: isLoading ? null : onPressed,
-        style: OutlinedButton.styleFrom(
-          foregroundColor: textColor ?? ColorPalette.primary,
-          side: BorderSide(
-            color: backgroundColor ?? ColorPalette.primary,
-            width: 2,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-          ),
+  Widget _buildElevatedButton() {
+    return ElevatedButton(
+      onPressed: isLoading ? null : onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: backgroundColor ?? ColorPalette.primary,
+        foregroundColor: textColor ?? Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
         ),
-        child: isLoading
-            ? SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    textColor ?? ColorPalette.primary,
-                  ),
-                ),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (icon != null) ...[
-                    Icon(icon, size: 20),
-                    const SizedBox(width: 8),
-                  ],
-                  Text(
-                    text,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
       ),
+      child: isLoading
+          ? const CircularProgressIndicator()
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null) Icon(icon),
+                Text(text),
+              ],
+            ),
+    );
+  }
+
+  Widget _buildOutlinedButton() {
+    return OutlinedButton(
+      onPressed: isLoading ? null : onPressed,
+      style: OutlinedButton.styleFrom(
+        side: BorderSide(color: backgroundColor ?? ColorPalette.primary),
+      ),
+      child: isLoading
+          ? const CircularProgressIndicator()
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null) Icon(icon),
+                Text(text),
+              ],
+            ),
     );
   }
 }
