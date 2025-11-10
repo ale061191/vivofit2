@@ -295,8 +295,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         labelText: 'Nombre completo',
                         prefixIcon: Icon(Icons.person_outline),
                       ),
-                      validator: (value) =>
-                          Validators.required(value, fieldName: 'El nombre'),
+                      validator: (value) => BaseValidators.required(value,
+                          fieldName: 'El nombre'),
                     ),
                     const SizedBox(height: 16),
 

@@ -305,7 +305,7 @@ class _ActivateMembershipScreenState extends State<ActivateMembershipScreen> {
                   hintText: '123456',
                 ),
                 validator: (value) =>
-                    Validators.required(value, fieldName: 'La referencia'),
+                    BaseValidators.required(value, fieldName: 'La referencia'),
               ),
               const SizedBox(height: 24),
 

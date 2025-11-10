@@ -97,7 +97,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   return DropdownMenuItem(value: bank, child: Text(bank));
                 }).toList(),
                 validator: (value) =>
-                    Validators.required(value, fieldName: 'Banco'),
+                    BaseValidators.required(value, fieldName: 'Banco'),
                 onChanged: (value) => _bankController.text = value ?? '',
               ),
               const SizedBox(height: 16),
