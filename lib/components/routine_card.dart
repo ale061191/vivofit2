@@ -55,7 +55,7 @@ class RoutineCard extends StatelessWidget {
                             width: 90,
                             color: ColorPalette.background,
                             child: const Center(
-                              child: const Icon(Icons.image,
+                              child: Icon(Icons.image,
                                   size: 32, color: ColorPalette.primary),
                             ),
                           ),
@@ -116,7 +116,7 @@ class RoutineCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(Icons.timer,
+                        const Icon(Icons.timer,
                             color: ColorPalette.textSecondary, size: 16),
                         const SizedBox(width: 4),
                         Text('${routine.durationMinutes} min',
@@ -124,7 +124,7 @@ class RoutineCard extends StatelessWidget {
                                 color: ColorPalette.textSecondary,
                                 fontSize: 13)),
                         const SizedBox(width: 12),
-                        Icon(Icons.local_fire_department,
+                        const Icon(Icons.local_fire_department,
                             color: ColorPalette.primary, size: 16),
                         const SizedBox(width: 4),
                         Text('${routine.estimatedCalories} kcal',
