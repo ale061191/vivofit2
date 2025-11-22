@@ -71,6 +71,8 @@ class StripeService {
       // 3. Mostrar la hoja de pago
       await Stripe.instance.presentPaymentSheet();
 
+      if (!context.mounted) return true;
+
       // 4. Si llegamos aquí, el pago fue exitoso
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -84,20 +86,24 @@ class StripeService {
         // El usuario canceló, no mostramos error
         return false;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error de pago: ${e.error.localizedMessage}'),
-          backgroundColor: ColorPalette.error,
-        ),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error de pago: ${e.error.localizedMessage}'),
+            backgroundColor: ColorPalette.error,
+          ),
+        );
+      }
       return false;
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error inesperado: $e'),
-          backgroundColor: ColorPalette.error,
-        ),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error inesperado: $e'),
+            backgroundColor: ColorPalette.error,
+          ),
+        );
+      }
       return false;
     }
   }
