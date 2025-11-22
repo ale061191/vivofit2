@@ -627,15 +627,15 @@ class ClarifaiService {
 
   void processImage(String imagePath) {
     if (imagePath.isEmpty) {
-      print('No se proporcionó una ruta de imagen.');
+      debugPrint('No se proporcionó una ruta de imagen.');
     }
 
     if (imagePath.endsWith('.jpg')) {
-      print('Procesando imagen JPG.');
+      debugPrint('Procesando imagen JPG.');
     }
 
     if (imagePath.endsWith('.png')) {
-      print('Procesando imagen PNG.');
+      debugPrint('Procesando imagen PNG.');
     }
   }
 
