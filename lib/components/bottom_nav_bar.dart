@@ -47,14 +47,20 @@ class BottomNavBar extends StatelessWidget {
               _buildNavItem(
                 context: context,
                 index: 2,
+                icon: Icons.shield_rounded,
+                label: 'Ranking',
+              ),
+              _buildNavItem(
+                context: context,
+                index: 3,
                 icon: Icons.article_rounded,
                 label: 'Blog',
               ),
               _buildNavItem(
                 context: context,
-                index: 3,
-                icon: Icons.person_rounded,
-                label: 'Perfil',
+                index: 4,
+                icon: Icons.more_horiz_rounded,
+                label: 'Más',
               ),
             ],
           ),

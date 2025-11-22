@@ -64,7 +64,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         );
 
-        context.go(AppRoutes.main);
+        // Navegar al onboarding post-registro en lugar de al home directo
+        context.go(AppRoutes.postRegisterOnboarding);
       } else {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(

@@ -11,9 +11,13 @@ import 'package:vivofit/services/supabase_auth_service.dart';
 import 'package:vivofit/services/supabase_user_service.dart';
 import 'package:vivofit/services/supabase_workout_service.dart';
 import 'package:vivofit/theme/app_theme.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicializar formateo de fechas para español
+  await initializeDateFormatting('es_ES', null);
 
   // Inicializar Supabase
   await Supabase.initialize(
@@ -23,6 +27,9 @@ void main() async {
 
   // Inicializar SharedPreferences (temporal, migraremos a Supabase)
   final prefs = await SharedPreferences.getInstance();
+
+  // Configurar preferencias en AppRoutes para manejo de onboarding
+  AppRoutes.setPrefs(prefs);
 
   runApp(VivofitApp(prefs: prefs));
 }

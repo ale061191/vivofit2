@@ -18,6 +18,10 @@ class ApiKeys {
   static const String supabaseAnonKey =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3dHZldGhxY2lnYXVheHl6cWh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyOTEwNzYsImV4cCI6MjA3Nzg2NzA3Nn0.6bTl_DGdWMmfNIpfQRzSZ7OPbBrjk2n52MatjPlgEDA';
 
+  // Stripe Configuration
+  // Dashboard: https://dashboard.stripe.com/test/apikeys
+  static const String stripePublishableKey = 'pk_test_TU_CLAVE_PUBLICA_AQUI';
+
   // Validación (no modificar)
   static bool get isConfigured =>
       geminiApiKey != 'TU_CLAVE_AQUI' &&

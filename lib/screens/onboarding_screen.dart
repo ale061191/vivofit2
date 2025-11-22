@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vivofit/theme/color_palette.dart';
 import 'package:vivofit/theme/app_theme.dart';
 import 'package:vivofit/components/custom_button.dart';
@@ -19,6 +20,14 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   final PageController _pageController = PageController();
   int _currentPage = 0;
   late AnimationController _animationController;
+
+  Future<void> _completeOnboarding(String route) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('onboarding_seen', true);
+    if (mounted) {
+      context.go(route);
+    }
+  }
 
   final List<OnboardingItem> _items = [
     OnboardingItem(
@@ -181,7 +190,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         ),
                         // Botón Saltar
                         TextButton(
-                          onPressed: () => context.go(AppRoutes.login),
+                          onPressed: () => _completeOnboarding(AppRoutes.login),
                           style: TextButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 16,
@@ -263,12 +272,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                 CustomButton(
                                   text: 'Comenzar',
                                   onPressed: () =>
-                                      context.go(AppRoutes.register),
+                                      _completeOnboarding(AppRoutes.register),
                                   icon: Icons.arrow_forward,
                                 ),
                                 const SizedBox(height: 12),
                                 TextButton(
-                                  onPressed: () => context.go(AppRoutes.login),
+                                  onPressed: () =>
+                                      _completeOnboarding(AppRoutes.login),
                                   child: const Text(
                                     '¿Ya tienes cuenta? Inicia sesión',
                                     style: TextStyle(

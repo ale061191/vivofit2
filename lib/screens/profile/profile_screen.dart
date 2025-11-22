@@ -3,16 +3,16 @@ import 'package:provider/provider.dart';
 import 'package:vivofit/components/custom_button.dart';
 import 'package:vivofit/services/supabase_user_service.dart';
 import 'package:vivofit/services/supabase_auth_service.dart';
-import 'package:vivofit/theme/app_theme.dart';
 import 'package:vivofit/theme/color_palette.dart';
 import 'package:vivofit/navigation/app_routes.dart';
 import 'package:vivofit/utils/test_data_generator.dart';
 import 'package:vivofit/models/bmi_progress.dart';
 import 'package:vivofit/widgets/analytics/bmi_progress_chart.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 /// Pantalla de Perfil
-/// Muestra y permite editar información del usuario
+/// Rediseñada estilo "Social Profile" (Ref: Duolingo style)
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -99,13 +99,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorPalette.background,
       appBar: AppBar(
-        title: const Text('Perfil'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit_outlined),
+            icon: const Icon(Icons.settings_outlined,
+                color: ColorPalette.textSecondary),
             onPressed: () async {
-              // Navegar y esperar a que regrese
+              // Navegar a editar perfil (donde están los datos personales)
               await context.push(AppRoutes.editProfile);
               // Recargar datos cuando regresa de editar
               if (mounted) {
@@ -113,6 +116,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               }
             },
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: Consumer<SupabaseUserService>(
@@ -132,184 +136,284 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           final imc = user.imc;
           final imcCategory = user.imcCategory;
+          final joinedDate =
+              DateFormat('MMMM yyyy', 'es_ES').format(user.createdAt);
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(AppTheme.paddingLarge),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Foto de perfil
-                GestureDetector(
-                  onTap: () {
-                    // Redirigir a editar perfil para cambiar foto
-                    Navigator.pushNamed(context, '/edit-profile');
-                  },
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundColor: ColorPalette.primary,
-                    backgroundImage: user.photoUrl != null
-                        ? NetworkImage(user.photoUrl!)
-                        : null,
-                    child: user.photoUrl == null
-                        ? const Icon(Icons.person,
-                            size: 60, color: Colors.black)
-                        : null,
+                // --- HEADER ---
+                Center(
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          // Redirigir a editar perfil para cambiar foto
+                          context.push(AppRoutes.editProfile);
+                        },
+                        child: Stack(
+                          children: [
+                            CircleAvatar(
+                              radius: 60,
+                              backgroundColor: ColorPalette.primary,
+                              backgroundImage: user.photoUrl != null
+                                  ? NetworkImage(user.photoUrl!)
+                                  : null,
+                              child: user.photoUrl == null
+                                  ? const Icon(Icons.person,
+                                      size: 60, color: Colors.black)
+                                  : null,
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: ColorPalette.background,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: const BoxDecoration(
+                                    color: ColorPalette.primary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.edit,
+                                    size: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        user.name,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: ColorPalette.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        user.email, // O username si existiera
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: ColorPalette.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Se unió en $joinedDate',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: ColorPalette.textTertiary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
 
-                Text(
-                  user.name,
-                  style: Theme.of(context).textTheme.headlineMedium,
+                // --- STATS ROW ---
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildStatItem(
+                      icon: Icons.local_fire_department,
+                      value: '0', // TODO: Real streak
+                      label: 'Racha',
+                      color: Colors.orange,
+                    ),
+                    Container(
+                        width: 1,
+                        height: 40,
+                        color: ColorPalette.cardBackground),
+                    _buildStatItem(
+                      icon: Icons.shield,
+                      value: 'Nivel 1', // TODO: Real level
+                      label: 'Principiante',
+                      color: Colors.blue,
+                    ),
+                    Container(
+                        width: 1,
+                        height: 40,
+                        color: ColorPalette.cardBackground),
+                    _buildStatItem(
+                      icon: Icons.group,
+                      value: '0', // TODO: Real followers
+                      label: 'Seguidores',
+                      color: Colors.green,
+                    ),
+                  ],
                 ),
 
-                Text(
-                  user.email,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                const SizedBox(height: 24),
+
+                // --- ACTION BUTTONS ---
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomButton(
+                        text: 'Compartir Perfil',
+                        onPressed: () {
+                          // TODO: Implement share
+                        },
+                        icon: Icons.share,
+                        isOutlined: true,
+                        height: 45,
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 32),
 
-                // IMC Card y Gráfico lado a lado
+                // --- RESUMEN SECTION ---
+                const Text(
+                  'Resumen',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: ColorPalette.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // IMC Card y Gráfico
                 if (imc != null && !_isLoadingBMI && _bmiProgress != null)
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // IMC Card
                       Expanded(
-                        child: Container(
-                          height:
-                              150, // Altura fija para igualar con el gráfico
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            gradient: ColorPalette.cardGradient,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                'Tu IMC',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: ColorPalette.textSecondary,
-                                ),
+                        child: GestureDetector(
+                          onTap: () {
+                            // Acceso rápido a editar peso/altura
+                            context.push(AppRoutes.editProfile);
+                          },
+                          child: Container(
+                            height: 180,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: ColorPalette.cardBackground,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: ColorPalette.cardBackground,
+                                width: 1,
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                imc.toStringAsFixed(1),
-                                style: const TextStyle(
-                                  fontSize: 42,
-                                  fontWeight: FontWeight.bold,
-                                  color: ColorPalette.primary,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.monitor_weight_outlined,
+                                    color: ColorPalette.primary, size: 28),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'Tu IMC',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: ColorPalette.textSecondary,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                imcCategory,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: ColorPalette.textPrimary,
+                                const SizedBox(height: 4),
+                                Text(
+                                  imc.toStringAsFixed(1),
+                                  style: const TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                    color: ColorPalette.textPrimary,
+                                  ),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 4),
+                                Text(
+                                  imcCategory,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: _getImcColor(imc),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(width: 16),
                       // Gráfico de progreso de IMC
                       Expanded(
-                        child: BMIProgressChart(
-                          bmiProgress: _bmiProgress!,
-                          showDetails: false, // Versión compacta para el perfil
+                        child: Container(
+                          height: 180,
+                          decoration: BoxDecoration(
+                            color: ColorPalette.cardBackground,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: BMIProgressChart(
+                              bmiProgress: _bmiProgress!,
+                              showDetails: false,
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
 
-                // Si solo hay IMC sin gráfico, mostrar solo el card
-                if (imc != null && (!_isLoadingBMI && _bmiProgress == null))
+                // Si no hay datos de IMC
+                if (imc == null && !_isLoadingBMI)
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      gradient: ColorPalette.cardGradient,
+                      color: ColorPalette.cardBackground,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Column(
                       children: [
+                        const Icon(Icons.warning_amber_rounded,
+                            color: ColorPalette.primary, size: 48),
+                        const SizedBox(height: 16),
                         const Text(
-                          'Tu IMC',
+                          'Completa tu perfil',
                           style: TextStyle(
-                            fontSize: 16,
-                            color: ColorPalette.textSecondary,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: ColorPalette.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text(
-                          imc.toStringAsFixed(1),
-                          style: const TextStyle(
-                            fontSize: 48,
-                            fontWeight: FontWeight.bold,
-                            color: ColorPalette.primary,
-                          ),
+                        const Text(
+                          'Agrega tu peso y altura para ver tu análisis de IMC.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: ColorPalette.textSecondary),
                         ),
-                        Text(
-                          imcCategory,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: ColorPalette.textPrimary,
-                          ),
+                        const SizedBox(height: 16),
+                        CustomButton(
+                          text: 'Completar Datos',
+                          onPressed: () => context.push(AppRoutes.editProfile),
                         ),
                       ],
                     ),
                   ),
 
-                // Indicador de carga
-                if (imc != null && _isLoadingBMI)
-                  Container(
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: ColorPalette.cardBackground,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        color: ColorPalette.primary,
-                      ),
-                    ),
-                  ),
-
-                const SizedBox(height: 16),
-
-                // Botón Ver Análisis Completo (debajo de ambos cards)
-                if (!_isLoadingBMI && _bmiProgress != null)
-                  CustomButton(
-                    text: 'Ver Análisis Completo',
-                    onPressed: () => context.push('/analytics'),
-                    icon: Icons.analytics_outlined,
-                    isOutlined: true,
-                  ),
-
-                const SizedBox(height: 24),
-
-                // Información personal
-                _buildInfoRow(Icons.cake, 'Edad', '${user.age ?? "N/A"} años'),
-                _buildInfoRow(
-                    Icons.height, 'Altura', '${user.height ?? "N/A"} cm'),
-                _buildInfoRow(
-                    Icons.monitor_weight, 'Peso', '${user.weight ?? "N/A"} kg'),
-                _buildInfoRow(
-                    Icons.phone, 'Teléfono', user.phone ?? 'No especificado'),
-                _buildInfoRow(Icons.location_on, 'Ubicación',
-                    user.location ?? 'No especificado'),
-
                 const SizedBox(height: 32),
 
-                // Membresías activas
+                // --- MIS MEMBRESÍAS ---
                 CustomButton(
                   text: 'Mis Membresías (${user.activeMemberships.length})',
                   onPressed: () => AppRoutes.goToActivateMembership(context),
                   icon: Icons.card_membership,
+                  backgroundColor: ColorPalette.cardBackground,
+                  textColor: ColorPalette.primary,
                   isOutlined: true,
                 ),
 
@@ -321,8 +425,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onPressed: () =>
                       TestDataGenerator.showGenerateDataDialog(context),
                   icon: Icons.auto_graph,
-                  backgroundColor: ColorPalette.cardBackground,
-                  textColor: ColorPalette.primary,
+                  backgroundColor: Colors.transparent,
+                  textColor: ColorPalette.textSecondary,
                   isOutlined: true,
                 ),
 
@@ -338,9 +442,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     }
                   },
                   icon: Icons.logout,
-                  backgroundColor: ColorPalette.error,
-                  textColor: Colors.white,
+                  backgroundColor: ColorPalette.error.withOpacity(0.1),
+                  textColor: ColorPalette.error,
+                  isOutlined: true,
                 ),
+
+                const SizedBox(height: 40),
               ],
             ),
           );
@@ -349,36 +456,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Icon(icon, color: ColorPalette.primary, size: 24),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    color: ColorPalette.textTertiary,
-                    fontSize: 12,
-                  ),
-                ),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    color: ColorPalette.textPrimary,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
+  Widget _buildStatItem({
+    required IconData icon,
+    required String value,
+    required String label,
+    required Color color,
+  }) {
+    return Column(
+      children: [
+        Icon(icon, color: color, size: 28),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: ColorPalette.textPrimary,
           ),
-        ],
-      ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: ColorPalette.textSecondary,
+          ),
+        ),
+      ],
     );
+  }
+
+  Color _getImcColor(double imc) {
+    if (imc < 18.5) return Colors.blue;
+    if (imc < 25) return Colors.green;
+    if (imc < 30) return Colors.orange;
+    return Colors.red;
   }
 }

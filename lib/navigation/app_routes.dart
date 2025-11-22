@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vivofit/screens/onboarding_screen.dart';
+import 'package:vivofit/screens/onboarding/post_registration_onboarding_screen.dart';
 import 'package:vivofit/screens/auth/login_screen.dart';
 import 'package:vivofit/screens/auth/register_screen.dart';
 import 'package:vivofit/screens/auth/forgot_password_screen.dart';
@@ -10,15 +12,20 @@ import 'package:vivofit/screens/home/program_detail_screen.dart';
 import 'package:vivofit/screens/home/routine_detail_screen.dart';
 import 'package:vivofit/screens/nutrition/food_detail_screen.dart';
 import 'package:vivofit/screens/blog/article_detail_screen.dart';
+import 'package:vivofit/screens/profile/profile_screen.dart';
 import 'package:vivofit/screens/profile/edit_profile_screen.dart';
 import 'package:vivofit/screens/membership/activate_membership_screen.dart';
 import 'package:vivofit/screens/payment/payment_screen.dart';
 import 'package:vivofit/screens/analytics/analytics_screen.dart';
+import 'package:vivofit/screens/membership/subscription_plans_screen.dart';
+import 'package:vivofit/screens/professionals/professionals_screen.dart';
 
 /// Configuración de rutas de la aplicación usando GoRouter
 class AppRoutes {
   // Nombres de rutas
   static const String onboarding = '/';
+  static const String postRegisterOnboarding = '/post-register-onboarding';
+  static const String subscriptionPlans = '/subscription-plans';
   static const String login = '/login';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
@@ -27,10 +34,18 @@ class AppRoutes {
   static const String routineDetail = '/routine/:id';
   static const String foodDetail = '/food/:id';
   static const String articleDetail = '/article/:id';
+  static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
   static const String activateMembership = '/membership/activate';
   static const String payment = '/payment/:programId';
   static const String analytics = '/analytics';
+  static const String professionals = '/professionals';
+
+  static late SharedPreferences prefs;
+
+  static void setPrefs(SharedPreferences preferences) {
+    prefs = preferences;
+  }
 
   /// Configuración de GoRouter
   static final GoRouter router = GoRouter(
@@ -41,24 +56,40 @@ class AppRoutes {
       final user = Supabase.instance.client.auth.currentUser;
       final isAuthenticated = user != null;
 
-      final isOnAuthScreen = state.matchedLocation == login ||
+      // Verificar si ya vio el onboarding
+      final bool onboardingSeen = prefs.getBool('onboarding_seen') ?? false;
+
+      final isAuthRoute = state.matchedLocation == login ||
           state.matchedLocation == register ||
-          state.matchedLocation == forgotPassword ||
-          state.matchedLocation == onboarding;
+          state.matchedLocation == forgotPassword;
 
-      // Si está autenticado y está en pantalla de auth, redirigir a home
-      if (isAuthenticated && isOnAuthScreen) {
-        return main;
+      final isOnboardingRoute = state.matchedLocation == onboarding;
+
+      // CASO 1: Usuario autenticado
+      // Si está autenticado y trata de entrar a onboarding o auth -> ir a Main
+      if (isAuthenticated) {
+        if (isOnboardingRoute || isAuthRoute) {
+          return main;
+        }
+        return null; // Permitir navegación normal
       }
 
-      // Si no está autenticado y no está en pantalla de auth, redirigir a onboarding
-      if (!isAuthenticated &&
-          !isOnAuthScreen &&
-          state.matchedLocation != onboarding) {
-        return onboarding;
+      // CASO 2: Usuario NO autenticado
+      if (!isAuthenticated) {
+        // Si NO ha visto el onboarding y no está en él -> ir a Onboarding
+        if (!onboardingSeen && !isOnboardingRoute) {
+          return onboarding;
+        }
+
+        // Si YA vio el onboarding y trata de entrar a onboarding -> ir a Login
+        if (onboardingSeen && isOnboardingRoute) {
+          return login;
+        }
+
+        // Si ya vio onboarding, permitir navegar a login/register/forgot
+        return null;
       }
 
-      // No hay redirección necesaria
       return null;
     },
     routes: [
@@ -66,6 +97,18 @@ class AppRoutes {
       GoRoute(
         path: onboarding,
         builder: (context, state) => const OnboardingScreen(),
+      ),
+
+      // Post Registration Onboarding
+      GoRoute(
+        path: postRegisterOnboarding,
+        builder: (context, state) => const PostRegistrationOnboardingScreen(),
+      ),
+
+      // Subscription Plans
+      GoRoute(
+        path: subscriptionPlans,
+        builder: (context, state) => const SubscriptionPlansScreen(),
       ),
 
       // Autenticación
@@ -127,6 +170,12 @@ class AppRoutes {
         },
       ),
 
+      // Perfil
+      GoRoute(
+        path: profile,
+        builder: (context, state) => const ProfileScreen(),
+      ),
+
       // Editar Perfil
       GoRoute(
         path: editProfile,
@@ -155,6 +204,12 @@ class AppRoutes {
       GoRoute(
         path: analytics,
         builder: (context, state) => const AnalyticsScreen(),
+      ),
+
+      // Profesionales
+      GoRoute(
+        path: professionals,
+        builder: (context, state) => const ProfessionalsScreen(),
       ),
     ],
 
